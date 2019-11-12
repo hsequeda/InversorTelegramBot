@@ -30,9 +30,8 @@ func main() {
 	}
 	updates := bot.ListenForWebhook("/" + bot.Token)
 	go http.ListenAndServe(":"+port, http.DefaultServeMux)
-
 	for update := range updates {
-		log.Printf("%+v\n", update.Message.Text)
+		log.Println("Message: " + update.Message.Text)
 	}
 
 }
