@@ -32,6 +32,7 @@ func main() {
 	go http.ListenAndServe(":"+port, http.DefaultServeMux)
 
 	for update := range updates {
-		log.Printf("%+v\n", update)
+		log.Printf("%+v\n", update.Message.Text)
 	}
+
 }
