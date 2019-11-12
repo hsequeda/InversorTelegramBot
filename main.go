@@ -32,6 +32,6 @@ func main() {
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
-		log.Printf("%+v\n", update)
+		log.Printf("%+v\n", update.Message)
 	}
 }
