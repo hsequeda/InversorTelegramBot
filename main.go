@@ -34,12 +34,4 @@ func main() {
 	for update := range updates {
 		log.Printf("%+v\n", update)
 	}
-
-	http.HandleFunc("/", helloworld)
-}
-
-func helloworld(w http.ResponseWriter, r *http.Request) {
-	if _, err := w.Write([]byte("Hello, World!")); err != nil {
-		fmt.Println(err)
-	}
 }
