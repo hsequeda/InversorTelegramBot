@@ -32,6 +32,17 @@ func main() {
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
-		log.Printf("%+v\n", update.Message)
+		b := tgbotapi.NewKeyboardButton("Button")
+		bc := tgbotapi.NewKeyboardButtonContact("Button contact")
+		bl := tgbotapi.NewKeyboardButtonLocation("Button location")
+		br := tgbotapi.NewKeyboardButtonRow(b, bc, bl)
+		rk := tgbotapi.NewReplyKeyboard(br)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+		msg.ReplyMarkup = rk
+		rm, err := bot.Send(msg)
+		if err != nil {
+			fmt.Println(err)
+		}
+		log.Printf("%+v\n", rm)
 	}
 }
