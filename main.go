@@ -24,12 +24,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(info)
+	log.Println("ASAAAAAAAAAAAAAAAAA")
+
 	if info.LastErrorDate != 0 {
 		log.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
+
+	log.Println("ASAAAAAAAAAAAAAAAAA")
 	updates := bot.ListenForWebhook("/")
-	go http.ListenAndServe(":"+port, http.DefaultServeMux)
+	http.ListenAndServe(":"+port, http.DefaultServeMux)
 	for update := range updates {
 		log.Println("Message: " + update.Message.Text)
 	}
