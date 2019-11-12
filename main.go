@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(info)
 	if info.LastErrorDate != 0 {
 		log.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
