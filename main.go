@@ -37,7 +37,7 @@ func main() {
 		bl := tgbotapi.NewKeyboardButtonLocation("Button location")
 		br := tgbotapi.NewKeyboardButtonRow(b, bc, bl)
 		rk := tgbotapi.NewReplyKeyboard(br)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "d ")
 		msg.ReplyMarkup = rk
 		rm, err := bot.Send(msg)
 		if err != nil {
