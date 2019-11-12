@@ -17,7 +17,7 @@ func main() {
 	bot.Debug = true
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	_, err = bot.SetWebhook(tgbotapi.NewWebhookWithCert("https://inversortelegrambot.herokuapp.com/", "cert.pem"))
+	// _, err = bot.SetWebhook(tgbotapi.NewWebhookWithCert("https://inversortelegrambot.herokuapp.com/",""))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,7 +29,7 @@ func main() {
 		log.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
 	updates := bot.ListenForWebhook("/")
-	go http.ListenAndServeTLS("0.0.0.0:"+port, "cert.pem", "key.pem", nil)
+	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
 		log.Printf("%+v\n", update)
