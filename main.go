@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/sirupsen/logrus"
+	_ "github.com/sirupsen/logrus"
 	"log"
 	"net/http"
 	"os"
 )
+
+var button Button
 
 func main() {
 	port := os.Getenv("PORT")
@@ -23,26 +27,42 @@ func main() {
 	}
 	info, err := bot.GetWebhookInfo()
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	if info.LastErrorDate != 0 {
-		log.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
+		logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
 	updates := bot.ListenForWebhook("/")
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
-		b := tgbotapi.NewKeyboardButton("Button")
-		bc := tgbotapi.NewKeyboardButtonContact("Button contact")
-		bl := tgbotapi.NewKeyboardButtonLocation("Button location")
-		br := tgbotapi.NewKeyboardButtonRow(b, bc, bl)
-		rk := tgbotapi.NewReplyKeyboard(br)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "d ")
-		msg.ReplyMarkup = rk
-		rm, err := bot.Send(msg)
-		if err != nil {
-			fmt.Println(err)
+		logrus.Infof("%#v", update)
+		if update.Message.Text == "Prices" {
+			prices, err := GetPrices()
+			if err != nil {
+				logrus.Error(err)
+			}
+			text := ""
+			for k, v := range prices {
+				text += fmt.Sprintf("BTC to %s: %s%f\n", k, v.Symbol, v.Last)
+			}
+			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, text)
+			if err != nil {
+				logrus.Error(err)
+			}
+			_, err = bot.Send(msg)
+			if err != nil {
+				logrus.Fatal(err)
+			}
+		} else {
+			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, "Welcome")
+			if err != nil {
+				logrus.Error(err)
+			}
+			_, err = bot.Send(msg)
+			if err != nil {
+				logrus.Fatal(err)
+			}
 		}
-		log.Printf("%+v\n", rm)
 	}
 }
