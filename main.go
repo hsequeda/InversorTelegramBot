@@ -34,7 +34,7 @@ func main() {
 		logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
 	http.HandleFunc("/blockchain/", showData)
-	updates := bot.ListenForWebhook("/")
+	updates := bot.ListenForWebhook("/InversorTelegramBot/")
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
