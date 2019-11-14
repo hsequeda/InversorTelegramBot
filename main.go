@@ -5,6 +5,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/sirupsen/logrus"
 	_ "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -32,6 +33,7 @@ func main() {
 	if info.LastErrorDate != 0 {
 		logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
+	http.HandleFunc("/blockchain/", showData)
 	updates := bot.ListenForWebhook("/")
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
@@ -65,4 +67,13 @@ func main() {
 			}
 		}
 	}
+}
+
+func showData(w http.ResponseWriter, r *http.Request) {
+
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		logrus.Print(err)
+	}
+	logrus.Print(string(b))
 }
