@@ -75,5 +75,15 @@ func showData(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Print(err)
 	}
+	status := r.URL.Query().Get("status")
+	logrus.Info("status: ", status)
+	address := r.URL.Query().Get("addr")
+	logrus.Info("address: ", address)
+	value := r.URL.Query().Get("value")
+	logrus.Info("value: ", value)
+
+	txid := r.URL.Query().Get("txid")
+	logrus.Info("txid: ", txid)
+
 	logrus.Print(string(b))
 }
