@@ -38,7 +38,7 @@ func init() {
 	}
 	bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
 	if err != nil {
-		logrus.Error("xx", err)
+		logrus.Error(err)
 	}
 	bot.Debug = true
 	info, err := bot.GetWebhookInfo()
@@ -56,7 +56,7 @@ func main() {
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
-		fmt.Println(update.Message.Chat.ID)
+		// fmt.Println(update.Message.Chat.ID)
 		switch update.Message.Text {
 		case "Precios":
 			prices, err := GetPrices()
