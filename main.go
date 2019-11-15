@@ -63,9 +63,9 @@ func main() {
 			continue
 		}
 		if update.Message.Chat.Type != "private" {
-			fmt.Println(update.Message.Chat)
 			continue
 		}
+		fmt.Println(update.Message.Text)
 		switch update.Message.Text {
 		case "Precios":
 			prices, err := GetPrices()
@@ -103,7 +103,7 @@ func main() {
 			}
 			break
 		default:
-			inviteLink := "Invite link"
+			inviteLink := fmt.Sprintf("https://t.me/Prebs_bot?start=%d", update.Message.Chat.ID)
 			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, inviteLink)
 			if err != nil {
 				logrus.Error(err)
