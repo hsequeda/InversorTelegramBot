@@ -49,14 +49,11 @@ func GetAddress() (string, error) {
 }
 
 func handleDeposit(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(channel_id)
 	status := r.URL.Query().Get("status")
 	address := r.URL.Query().Get("addr")
 	value := r.URL.Query().Get("value")
 	txid := r.URL.Query().Get("txid")
-	fmt.Println(status)
-	fmt.Println(address)
-	fmt.Println(value)
-	fmt.Println(txid)
 	switch status {
 	case "0":
 		u, err := GetUserByAddress(address)
@@ -95,19 +92,4 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 		}
 		break
 	}
-}
-
-func showData(w http.ResponseWriter, r *http.Request) {
-
-	status := r.URL.Query().Get("status")
-	logrus.Info("status: ", status)
-	address := r.URL.Query().Get("addr")
-	logrus.Info("address: ", address)
-	value := r.URL.Query().Get("value")
-	logrus.Info("value: ", value)
-
-	txid := r.URL.Query().Get("txid")
-	logrus.Info("txid: ", txid)
-
-	// logrus.Print(string(b))
 }

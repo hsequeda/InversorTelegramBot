@@ -94,13 +94,7 @@ func main() {
 			}
 			break
 		default:
-			inviteLink, err := bot.GetInviteLink(tgbotapi.ChatConfig{
-				ChatID:             931110470,
-				SuperGroupUsername: "aa",
-			})
-			if err != nil {
-				logrus.Error(err)
-			}
+			inviteLink := "Invite link"
 			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, inviteLink)
 			if err != nil {
 				logrus.Error(err)
