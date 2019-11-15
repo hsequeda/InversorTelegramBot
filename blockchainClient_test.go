@@ -20,3 +20,12 @@ func TestGetPrices(t *testing.T) {
 		assert.NotNil(t, v.Symbol, k)
 	}
 }
+
+func TestGetAddress(t *testing.T) {
+	// key="KehhfchD6puGoAaKKY8pIZhVUtb0tVGWPgQvh0866AE"
+	if addr, err := GetAddress(); err != nil {
+		t.Error(err)
+	} else {
+		t.Log(addr)
+	}
+}

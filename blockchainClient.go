@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -26,4 +27,21 @@ func GetPrices() (map[string]TicketProperty, error) {
 		return nil, err
 	}
 	return tickets, nil
+}
+
+func GetAddress() (string, error) {
+	req, err := http.NewRequest("POST", "https://www.blockonomics.co/api/new_address", nil)
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", key))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	var address = make(map[string]string)
+	err = json.NewDecoder(resp.Body).Decode(&address)
+	return address["address"], err
 }

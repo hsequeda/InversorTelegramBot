@@ -12,7 +12,7 @@ func (*Button) InitButton(id int64, userName, msg string) (tgbotapi.Chattable, e
 		tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Movimientos"), tgbotapi.NewKeyboardButton(userName)),
 		tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Deposito"), tgbotapi.NewKeyboardButton("Retirar")),
 		tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Referidos"), tgbotapi.NewKeyboardButton("Extra")),
-		tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Prices")))
+		tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Precios")))
 
 	sendMsg := tgbotapi.NewMessage(id, msg)
 	sendMsg.ReplyMarkup = initReplyKeyboard

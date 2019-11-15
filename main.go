@@ -11,10 +11,25 @@ import (
 	"os"
 )
 
-var button Button
+var (
+	button Button
+	port   string
+	key    string
+)
+
+func init() {
+	key = os.Getenv("APIKEY")
+	if key == "" {
+		logrus.Error("$APIKEY is empty")
+	}
+	port = os.Getenv("PORT")
+	if key == "" {
+		logrus.Error("$PORT is empty")
+	}
+
+}
 
 func main() {
-	port := os.Getenv("PORT")
 	bot, err := tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
 	if err != nil {
 		fmt.Println(err)
@@ -38,8 +53,8 @@ func main() {
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
-		logrus.Infof("%#v", update)
-		if update.Message.Text == "Prices" {
+		switch update.Message.Text {
+		case "Price":
 			prices, err := GetPrices()
 			if err != nil {
 				logrus.Error(err)
@@ -56,7 +71,25 @@ func main() {
 			if err != nil {
 				logrus.Fatal(err)
 			}
-		} else {
+			break
+		case "Deposito":
+			if !UserExist(update.Message.Chat.ID) {
+				address, err := GetAddress()
+				SetAddrsToUser(address)
+				if err != nil {
+					logrus.Error(err)
+				}
+				msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, fmt.Sprintf(
+					" Envie la cantidad que desea invertir a la siguiente direccion: \n %s", address))
+				if err != nil {
+					logrus.Error(err)
+				}
+				if _, err := bot.Send(msg); err != nil {
+					logrus.Error(err)
+				}
+			}
+			break
+		default:
 			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, "Welcome")
 			if err != nil {
 				logrus.Error(err)
@@ -67,6 +100,15 @@ func main() {
 			}
 		}
 	}
+}
+
+func SetAddrsToUser(s string) {
+	// TODO
+}
+
+func UserExist(i int64) bool {
+	// TODO
+	return false
 }
 
 func showData(w http.ResponseWriter, r *http.Request) {
