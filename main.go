@@ -5,6 +5,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/sirupsen/logrus"
 	_ "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -53,7 +54,7 @@ func init() {
 
 func main() {
 	updates := bot.ListenForWebhook("/InversorTelegramBot/")
-	http.HandleFunc("/blockchain/", HandleDeposit)
+	http.HandleFunc("/blockchain/", showData)
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
@@ -121,4 +122,22 @@ func SetAddrsToUser(s string) {
 func UserExist(i int64) bool {
 	// TODO
 	return false
+}
+func showData(w http.ResponseWriter, r *http.Request) {
+
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		logrus.Print(err)
+	}
+	status := r.URL.Query().Get("status")
+	logrus.Info("status: ", status)
+	address := r.URL.Query().Get("addr")
+	logrus.Info("address: ", address)
+	value := r.URL.Query().Get("value")
+	logrus.Info("value: ", value)
+
+	txid := r.URL.Query().Get("txid")
+	logrus.Info("txid: ", txid)
+
+	logrus.Print(string(b))
 }
