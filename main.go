@@ -37,9 +37,8 @@ func init() {
 		logrus.Error("$PORT is empty")
 	}
 	bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
-
 	if err != nil {
-		logrus.Error(err)
+		logrus.Error("xx", err)
 	}
 	bot.Debug = true
 	info, err := bot.GetWebhookInfo()
