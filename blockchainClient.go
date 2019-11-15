@@ -49,8 +49,7 @@ func GetAddress() (string, error) {
 	return address["address"], err
 }
 
-func HandleDeposit(w http.ResponseWriter, r *http.Request) {
-	fmt.Print("asdasd")
+func handleDeposit(w http.ResponseWriter, r *http.Request) {
 	status := r.URL.Query().Get("status")
 	address := r.URL.Query().Get("addr")
 	value := r.URL.Query().Get("value")
