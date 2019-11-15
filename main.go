@@ -44,7 +44,7 @@ func init() {
 	bot.Debug = true
 	info, err := bot.GetWebhookInfo()
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Error(err)
 	}
 	if info.LastErrorDate != 0 {
 		logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
