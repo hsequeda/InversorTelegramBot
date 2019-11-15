@@ -5,6 +5,7 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -92,4 +93,23 @@ func HandleDeposit(w http.ResponseWriter, r *http.Request) {
 		}
 		break
 	}
+}
+
+func showData(w http.ResponseWriter, r *http.Request) {
+
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		logrus.Print(err)
+	}
+	status := r.URL.Query().Get("status")
+	logrus.Info("status: ", status)
+	address := r.URL.Query().Get("addr")
+	logrus.Info("address: ", address)
+	value := r.URL.Query().Get("value")
+	logrus.Info("value: ", value)
+
+	txid := r.URL.Query().Get("txid")
+	logrus.Info("txid: ", txid)
+
+	logrus.Print(string(b))
 }
