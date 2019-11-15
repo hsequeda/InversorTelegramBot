@@ -11,7 +11,14 @@ type User struct {
 
 func GetUserByAddress(address string) (*User, error) {
 	// TODO
-	return nil, nil
+	return &User{
+		Id:             1,
+		Name:           "M. de Cervantes",
+		DepositAddress: "",
+		ReciveAddress:  "",
+		Balance:        "",
+		ParentId:       0,
+	}, nil
 }
 
 func AddInvestToUser(value string, userID int64) {
