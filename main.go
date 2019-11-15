@@ -5,19 +5,21 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/sirupsen/logrus"
 	_ "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 var (
-	button Button
-	port   string
-	key    string
+	bot        *tgbotapi.BotAPI
+	button     Button
+	port       string
+	key        string
+	channel_id int64
 )
 
 func init() {
+	var err error
 	key = os.Getenv("APIKEY")
 	if key == "" {
 		logrus.Error("$APIKEY is empty")
@@ -27,20 +29,19 @@ func init() {
 		logrus.Error("$PORT is empty")
 	}
 
-}
+	channel_id, err = strconv.ParseInt(os.Getenv("CHNNL_ID"), 10, 0)
+	if err != nil || channel_id == 0 {
+		logrus.Error("error obtains $CHNNL_ID, can by empty")
+	}
+	if key == "" {
+		logrus.Error("$PORT is empty")
+	}
+	bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
 
-func main() {
-	bot, err := tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
 	if err != nil {
-		fmt.Println(err)
+		logrus.Error(err)
 	}
 	bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
-	// _, err = bot.SetWebhook(tgbotapi.NewWebhookWithCert("https://inversortelegrambot.herokuapp.com/",""))
-	if err != nil {
-		log.Fatal(err)
-	}
 	info, err := bot.GetWebhookInfo()
 	if err != nil {
 		logrus.Fatal(err)
@@ -48,13 +49,16 @@ func main() {
 	if info.LastErrorDate != 0 {
 		logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
-	http.HandleFunc("/blockchain/", showData)
+}
+
+func main() {
+	http.HandleFunc("/blockchain/", HandleDeposit)
 	updates := bot.ListenForWebhook("/InversorTelegramBot/")
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
 		switch update.Message.Text {
-		case "Price":
+		case "Precios":
 			prices, err := GetPrices()
 			if err != nil {
 				logrus.Error(err)
@@ -109,23 +113,4 @@ func SetAddrsToUser(s string) {
 func UserExist(i int64) bool {
 	// TODO
 	return false
-}
-
-func showData(w http.ResponseWriter, r *http.Request) {
-
-	b, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		logrus.Print(err)
-	}
-	status := r.URL.Query().Get("status")
-	logrus.Info("status: ", status)
-	address := r.URL.Query().Get("addr")
-	logrus.Info("address: ", address)
-	value := r.URL.Query().Get("value")
-	logrus.Info("value: ", value)
-
-	txid := r.URL.Query().Get("txid")
-	logrus.Info("txid: ", txid)
-
-	logrus.Print(string(b))
 }
