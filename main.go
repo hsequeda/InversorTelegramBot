@@ -56,7 +56,8 @@ func main() {
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
-		// fmt.Println(update.Message.Chat.ID)
+		fmt.Println(update)
+
 		switch update.Message.Text {
 		case "Precios":
 			prices, err := GetPrices()
