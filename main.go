@@ -94,7 +94,14 @@ func main() {
 			}
 			break
 		default:
-			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, "Welcome")
+			inviteLink, err := bot.GetInviteLink(tgbotapi.ChatConfig{
+				ChatID:             931110470,
+				SuperGroupUsername: "aa",
+			})
+			if err != nil {
+				logrus.Error(err)
+			}
+			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, inviteLink)
 			if err != nil {
 				logrus.Error(err)
 			}
@@ -108,6 +115,7 @@ func main() {
 
 func SetAddrsToUser(s string) {
 	// TODO
+
 }
 
 func UserExist(i int64) bool {
