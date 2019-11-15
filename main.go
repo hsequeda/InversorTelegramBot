@@ -52,8 +52,8 @@ func init() {
 }
 
 func main() {
-	http.HandleFunc("/blockchain/", HandleDeposit)
 	updates := bot.ListenForWebhook("/InversorTelegramBot/")
+	http.HandleFunc("/blockchain/", HandleDeposit)
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
