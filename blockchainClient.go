@@ -82,7 +82,7 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 		}
 		AddInvestToUser(value, u.Id)
 
-		msg := tgbotapi.NewMessage(channel_id,
+		msg := tgbotapi.NewMessageToChannel(channel_id,
 			fmt.Sprintf("Nueva inversion:\n "+
 				"%s ha invertido %s BTC!\n"+
 				"Transaction ID:\n"+

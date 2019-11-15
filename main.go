@@ -7,7 +7,6 @@ import (
 	_ "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 var (
@@ -15,7 +14,7 @@ var (
 	button     Button
 	port       string
 	key        string
-	channel_id int64
+	channel_id string
 )
 
 func init() {
@@ -29,8 +28,8 @@ func init() {
 		logrus.Error("$PORT is empty")
 	}
 
-	channel_id, err = strconv.ParseInt(os.Getenv("CHNNL_ID"), 10, 0)
-	if err != nil || channel_id == 0 {
+	channel_id = os.Getenv("CHNNL_ID")
+	if channel_id == "" {
 		logrus.Error("error obtains $CHNNL_ID, can by empty")
 	}
 	if key == "" {
