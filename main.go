@@ -56,6 +56,10 @@ func main() {
 	go http.ListenAndServe("0.0.0.0:"+port, nil)
 
 	for update := range updates {
+		if update.Message == nil {
+			fmt.Println(update)
+			continue
+		}
 		if update.Message.Chat.Type != "private" {
 			fmt.Println(update.Message.Chat)
 			continue
