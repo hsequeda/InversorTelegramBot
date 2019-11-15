@@ -5,7 +5,6 @@ import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -95,20 +94,46 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 }
 
 func showData(w http.ResponseWriter, r *http.Request) {
-
-	b, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		logrus.Print(err)
-	}
 	status := r.URL.Query().Get("status")
-	logrus.Info("status: ", status)
 	address := r.URL.Query().Get("addr")
-	logrus.Info("address: ", address)
 	value := r.URL.Query().Get("value")
-	logrus.Info("value: ", value)
-
 	txid := r.URL.Query().Get("txid")
-	logrus.Info("txid: ", txid)
+	switch status {
+	case "0":
+		u, err := GetUserByAddress(address)
+		if err != nil {
+			logrus.Error(err)
+		}
+		logrus.Info(
+			fmt.Sprintf("Se ha detectado una tranccion "+
+				"no confirmada por parte del usuario %s.\n"+
+				"Transaction ID:%s", u.Name, txid))
+		break
+	case "1":
+		u, err := GetUserByAddress(address)
+		if err != nil {
+			logrus.Error(err)
+		}
+		logrus.Info(
+			fmt.Sprintf("Se ha detectado una tranccion "+
+				"parcialmente confirmada por parte del usuario %s.\n"+
+				"Transaction ID:%s", u.Name, txid))
+		break
+	case "2":
+		u, err := GetUserByAddress(address)
+		if err != nil {
+			logrus.Error(err)
+		}
+		AddInvestToUser(value, u.Id)
 
-	logrus.Print(string(b))
+		msg := tgbotapi.NewMessage(channel_id,
+			fmt.Sprintf("Nueva inversion:\n "+
+				"%s ha invertido %s BTC!\n"+
+				"Transaction ID:\n"+
+				"%s", u.Name, value, txid))
+		if _, err := bot.Send(msg); err != nil {
+			logrus.Error(err)
+		}
+		break
+	}
 }
