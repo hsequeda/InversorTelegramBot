@@ -4,23 +4,91 @@ type User struct {
 	Id             int64
 	Name           string
 	DepositAddress string
-	ReciveAddress  string
+	ReceiveAddress string
 	Balance        string
 	ParentId       int64
+	Txs            []UserTransaction
+	Plans          []UserPlan
 }
 
-func GetUserByAddress(address string) (*User, error) {
-	// TODO
-	return &User{
-		Id:             1,
-		Name:           "M. de Cervantes",
-		DepositAddress: "",
-		ReciveAddress:  "",
-		Balance:        "",
-		ParentId:       0,
-	}, nil
+func (u *User) GetID() int64 {
+	return u.Id
 }
 
-func AddInvestToUser(value string, userID int64) {
-	// TODO
+func (u *User) SetID(id int64) {
+	u.Id = id
+}
+
+func (u *User) GetName() string {
+	return u.Name
+}
+
+func (u *User) SetName(name string) {
+	u.Name = name
+}
+
+func (u *User) GetDepositAddress() string {
+	return u.DepositAddress
+}
+
+func (u *User) SetDepositAddress(addr string) {
+	u.DepositAddress = addr
+}
+
+func (u *User) GetReceiveAddress() string {
+	return u.ReceiveAddress
+}
+
+func (u *User) SetReceiveAddress(addr string) {
+	u.ReceiveAddress = addr
+}
+
+func (u *User) GetBalance() string {
+	panic("implement me")
+}
+
+func (u *User) GetParentId() int64 {
+	return u.ParentId
+}
+
+func (u *User) SetParentId(parentId int64) {
+	u.ParentId = parentId
+}
+
+func (u *User) GetReceiveTransaction() []UserTransaction {
+	var txs []UserTransaction
+	for e := range u.Txs {
+		if !u.Txs[e].IsDepositTx() {
+			txs = append(txs, u.Txs[e])
+		}
+	}
+	return txs
+}
+
+func (u *User) GetDepositTransaction() []UserTransaction {
+	var txs []UserTransaction
+	for e := range u.Txs {
+		if u.Txs[e].IsDepositTx() {
+			txs = append(txs, u.Txs[e])
+		}
+	}
+	return txs
+}
+
+func (u *User) AddTransaction(transaction UserTransaction) {
+	u.Txs = append(u.Txs, transaction)
+}
+
+func (u *User) GetActivePlans() []UserPlan {
+	var plans []UserPlan
+	for e := range u.Plans {
+		if u.Plans[e].IsActive() {
+			plans = append(plans, u.Plans[e])
+		}
+	}
+	return plans
+}
+
+func (u *User) AddPlan(plan UserPlan) {
+	u.Plans = append(u.Plans, plan)
 }
