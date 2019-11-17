@@ -53,3 +53,17 @@ func createPlan(value int64) *Plan {
 	}
 	return nil
 }
+
+func SetAddrsToUser(s string) {
+	// TODO
+
+}
+
+// UserExist verify if an user exist into database.
+func UserExist(id int64) bool {
+	_, err := data.Get(id)
+	if err != errUserNotFound(id) {
+		return true
+	}
+	return false
+}

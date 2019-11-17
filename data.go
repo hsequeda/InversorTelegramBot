@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type Data struct {
 }
 
@@ -23,4 +27,8 @@ func (d Data) Delete(id int64) error {
 
 func (d Data) Update(id int64, user BotUser) error {
 	panic("implement me")
+}
+
+func errUserNotFound(id int64) error {
+	return fmt.Errorf("user with id: %d not found", id)
 }

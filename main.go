@@ -115,13 +115,3 @@ func main() {
 		}
 	}
 }
-
-func SetAddrsToUser(s string) {
-	// TODO
-
-}
-
-func UserExist(i int64) bool {
-	// TODO
-	return false
-}
