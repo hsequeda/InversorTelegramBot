@@ -54,9 +54,17 @@ func createPlan(value int64) *Plan {
 	return nil
 }
 
-func SetAddrsToUser(s string) {
-	// TODO
+func SetAddrsToUser(id int64, addr string) error {
+	u, err := data.Get(id)
+	if err != nil {
+		return err
+	}
+	u.SetDepositAddress(addr)
+	if err := data.Update(id, u); err != nil {
+		return err
+	}
 
+	return nil
 }
 
 // UserExist verify if an user exist into database.

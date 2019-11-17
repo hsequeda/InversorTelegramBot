@@ -88,8 +88,10 @@ func main() {
 		case "Deposito":
 			if !UserExist(update.Message.Chat.ID) {
 				address, err := GetAddress()
-				SetAddrsToUser(address)
 				if err != nil {
+					logrus.Error(err)
+				}
+				if err := SetAddrsToUser(update.Message.Chat.ID, address); err != nil {
 					logrus.Error(err)
 				}
 				msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, fmt.Sprintf(
