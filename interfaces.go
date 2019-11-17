@@ -2,7 +2,7 @@ package main
 
 import "time"
 
-type Data interface {
+type DbManager interface {
 	Insert(user BotUser) (int64, error)
 	Get(id int64) (BotUser, error)
 	List() ([]BotUser, error)

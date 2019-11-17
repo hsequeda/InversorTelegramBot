@@ -56,37 +56,40 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 	txid := r.URL.Query().Get("txid")
 	switch status {
 	case "0":
-		u, err := GetUserByAddress(address)
+		u, err := GetUserByDepositAddress(address)
 		if err != nil {
 			logrus.Error(err)
 		}
 		logrus.Info(
 			fmt.Sprintf("Se ha detectado una tranccion "+
 				"no confirmada por parte del usuario %s.\n"+
-				"Transaction ID:%s", u.Name, txid))
+				"Transaction ID:%s", u.GetName(), txid))
 		break
 	case "1":
-		u, err := GetUserByAddress(address)
+		u, err := GetUserByDepositAddress(address)
 		if err != nil {
 			logrus.Error(err)
 		}
 		logrus.Info(
 			fmt.Sprintf("Se ha detectado una tranccion "+
 				"parcialmente confirmada por parte del usuario %s.\n"+
-				"Transaction ID:%s", u.Name, txid))
+				"Transaction ID:%s", u.GetName(), txid))
 		break
 	case "2":
-		u, err := GetUserByAddress(address)
+		u, err := GetUserByDepositAddress(address)
 		if err != nil {
 			logrus.Error(err)
 		}
-		AddInvestToUser(value, u.Id)
-
+		if err := AddInvestToUser(value, u.GetID()); err != nil {
+			logrus.Error(err)
+		}
+		// TODO
+		// Dividir entre 1000000 para obtener la cantidad en BTC.
 		msg := tgbotapi.NewMessageToChannel(channel_id,
 			fmt.Sprintf("Nueva inversion:\n "+
 				"%s ha invertido %s BTC!\n"+
 				"Transaction ID:\n"+
-				"%s", u.Name, value, txid))
+				"%s", u.GetName(), value, txid))
 		if _, err := bot.Send(msg); err != nil {
 			logrus.Error(err)
 		}
