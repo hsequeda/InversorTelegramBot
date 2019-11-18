@@ -49,7 +49,7 @@ func GetAddress() (string, error) {
 }
 
 func handleDeposit(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(channel_id)
+	fmt.Println(channelId)
 	status := r.URL.Query().Get("status")
 	address := r.URL.Query().Get("addr")
 	value := r.URL.Query().Get("value")
@@ -83,9 +83,13 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 		if err := AddInvestToUser(value, u.GetID()); err != nil {
 			logrus.Error(err)
 		}
+
+		if err := AddTransactionToUser(u.GetID(), true, txid, value); err != nil {
+			logrus.Error(err)
+		}
 		// TODO
 		// Dividir entre 1000000 para obtener la cantidad en BTC.
-		msg := tgbotapi.NewMessageToChannel(channel_id,
+		msg := tgbotapi.NewMessageToChannel(channelId,
 			fmt.Sprintf("Nueva inversion:\n "+
 				"%s ha invertido %s BTC!\n"+
 				"Transaction ID:\n"+

@@ -23,27 +23,27 @@ type Plan struct {
 	Invested int64
 }
 
-func (p Plan) IsActive() bool {
-	panic("implement me")
+func (p *Plan) IsActive() bool {
+	return p.Active
 }
 
-func (p Plan) GetStartDate() time.Time {
-	panic("implement me")
+func (p *Plan) GetStartDate() time.Time {
+	return p.Start
 }
 
-func (p Plan) GetPlanType() PlanType {
-	panic("implement me")
+func (p *Plan) GetPlanType() PlanType {
+	return p.Type
 }
 
-func (p Plan) SetPlanType(planType PlanType) {
-	panic("implement me")
+func (p *Plan) SetPlanType(planType PlanType) {
+	p.Type = planType
 }
 
-func (p Plan) GetAmount() float64 {
-	panic("implement me")
+func (p Plan) GetAmount() int64 {
+	return p.Invested
 }
 
-func (p Plan) SetAmount(investment float64) {
+func (p Plan) SetAmount(investment int64) {
 }
 
 func getPlanTypeForValue(value int64) PlanType {

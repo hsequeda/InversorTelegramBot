@@ -33,7 +33,7 @@ type UserTransaction interface {
 	GetTxId() string
 	SetTxId(txId string)
 	IsDepositTx() bool
-	Amount() string
+	GetAmount() int64
 }
 
 type UserPlan interface {
@@ -41,6 +41,6 @@ type UserPlan interface {
 	GetStartDate() time.Time
 	GetPlanType() PlanType
 	SetPlanType(planType PlanType)
-	GetAmount() float64
-	SetAmount(investment float64)
+	GetAmount() int64
+	SetAmount(investment int64)
 }

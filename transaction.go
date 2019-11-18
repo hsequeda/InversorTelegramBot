@@ -3,6 +3,7 @@ package main
 type Transaction struct {
 	TxID      string
 	IsDeposit bool
+	Amount    int64
 }
 
 func (t *Transaction) GetTxId() string {
@@ -14,9 +15,9 @@ func (t *Transaction) SetTxId(txId string) {
 }
 
 func (t *Transaction) IsDepositTx() bool {
-	panic("implement me")
+	return t.IsDeposit
 }
 
-func (t *Transaction) Amount() string {
-	panic("implement me")
+func (t *Transaction) GetAmount() int64 {
+	return t.Amount
 }

@@ -6,15 +6,14 @@ import (
 	"github.com/sirupsen/logrus"
 	_ "github.com/sirupsen/logrus"
 	"net/http"
-	"os"
 )
 
 var (
-	bot        *tgbotapi.BotAPI
-	button     Button
-	port       string
-	key        string
-	channel_id string
+	bot       *tgbotapi.BotAPI
+	button    Button
+	port      string
+	key       string
+	channelId string
 )
 
 func init() {
@@ -38,14 +37,6 @@ func init() {
 	bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
 	if err != nil {
 		logrus.Error(err)
-	}
-	bot.Debug = true
-	info, err := bot.GetWebhookInfo()
-	if err != nil {
-		logrus.Error(err)
-	}
-	if info.LastErrorDate != 0 {
-		logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
 	}
 }
 
@@ -95,7 +86,7 @@ func main() {
 					logrus.Error(err)
 				}
 				msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, fmt.Sprintf(
-					" Envie la cantidad que desea invertir a la siguiente direccion: \n %s", address))
+					" Envie la cantidad que desea invertir a la siguiente direccion: \n <code>%s</code> ", address))
 				if err != nil {
 					logrus.Error(err)
 				}

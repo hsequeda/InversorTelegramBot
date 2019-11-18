@@ -54,6 +54,7 @@ func createPlan(value int64) *Plan {
 	return nil
 }
 
+// SetAddrsToUser replace deposit address of user.
 func SetAddrsToUser(id int64, addr string) error {
 	u, err := data.Get(id)
 	if err != nil {
@@ -74,4 +75,24 @@ func UserExist(id int64) bool {
 		return true
 	}
 	return false
+}
+
+// AddTransactionToUser add a transaction to user.
+func AddTransactionToUser(id int64, isDeposit bool, txId, value string) error {
+	u, err := data.Get(id)
+	if err != nil {
+		return err
+	}
+
+	amount, err := strconv.ParseInt(value, 10, 0)
+	if err != nil {
+		return err
+	}
+
+	u.AddTransaction(&Transaction{
+		TxID:      txId,
+		IsDeposit: isDeposit,
+		Amount:    amount,
+	})
+	return nil
 }
