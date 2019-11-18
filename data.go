@@ -37,16 +37,16 @@ func InitDb() error {
 	}
 	data.Stmts = map[string]*stmtConfig{
 		"listUser":   {q: "select * from \"User\";"},
-		"getUser":    {q: "select * from \"User\" where id=?;"},
+		"getUser":    {q: "select * from \"User\" where id=$1;"},
 		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id) values ($1,$2,$3,$4,$5);"},
 		"updateUser": {q: "update User set name=? where id=?;"},
 		"deleteUser": {q: "delete from User where id=?"},
 		"listPlan":   {q: "select * from user_plan"},
-		"getPlan":    {q: "select * from user_plan where user_id=?;"},
+		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
 		"insertPlan": {q: "insert into \"user_plan\" (user_id, is_active, begin_date, invest) values ($1,$2,$3,$4);"},
 		"updatePlan": {q: "update user_plan set is_active=false where (begin_date::date + '90 day'::interval)>?;"},
 		"listTx":     {q: "select * from user_tx"},
-		"getTx":      {q: "select * from user_tx where user_id=?;"},
+		"getTx":      {q: "select * from \"user_tx\" where user_id=$1;"},
 		"insertTx":   {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id) values ($1,$2,$3,$4);"},
 		// "updateTx":   {q: "update user_tx set ;"},
 	}
@@ -80,8 +80,25 @@ func (d Data) Insert(u BotUser) (int64, error) {
 }
 
 func (d Data) Get(id int64) (BotUser, error) {
-	panic("implement me")
+	getUser := d.Stmts["getUser"].stmt
+	u := User{}
+	if err := getUser.QueryRow(id).
+		Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId); err != nil {
+		return nil, err
+	}
+	p, err := data.getPlans(u.Id)
+	if err != nil {
+		return nil, err
+	}
+	u.Plans = append(u.Plans, p...)
 
+	txs, err := data.getTxs(u.Id)
+	if err != nil {
+		return nil, err
+	}
+	u.Txs = append(u.Txs, txs...)
+
+	return &u, nil
 }
 
 func (d Data) List() ([]BotUser, error) {
@@ -112,6 +129,46 @@ func (d Data) insertTx(userId int64, tx UserTransaction) error {
 		return err
 	}
 	return nil
+}
+
+func (d Data) getPlans(userId int64) ([]UserPlan, error) {
+	getPlans := d.Stmts["getPlan"].stmt
+	rows, err := getPlans.Query(userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	plans := make([]UserPlan, 0)
+	for rows.Next() {
+		p := Plan{}
+
+		if err := rows.Scan(&userId, &p.Active, &p.Start, &p.Invested); err != nil {
+			return nil, err
+		}
+		plans = append(plans, &p)
+	}
+	return plans, nil
+}
+
+func (d Data) getTxs(userId int64) ([]UserTransaction, error) {
+	getTxs := data.Stmts["getTx"].stmt
+
+	rows, err := getTxs.Query(userId)
+	if err != nil {
+		return nil, err
+	}
+	txs := make([]UserTransaction, 0)
+	defer rows.Close()
+
+	for rows.Next() {
+		tx := Transaction{}
+		if err := rows.Scan(&userId, &tx.IsDeposit, &tx.Amount, &tx.TxID); err != nil {
+			return nil, err
+		}
+		txs = append(txs, &tx)
+	}
+	return txs, nil
 }
 
 func errUserNotFound(id int64) error {
