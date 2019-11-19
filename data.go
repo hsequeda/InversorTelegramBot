@@ -39,8 +39,8 @@ func InitDb() error {
 		"listUser":   {q: "select * from \"User\";"},
 		"getUser":    {q: "select * from \"User\" where id=$1;"},
 		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id) values ($1,$2,$3,$4,$5);"},
-		"updateUser": {q: "update User set name=? where id=?;"},
-		"deleteUser": {q: "delete from User where id=?"},
+		"updateUser": {q: "update \"User\" set name=$1 where id=$2;"},
+		"deleteUser": {q: "delete from \"User\" where id=$1"},
 		"listPlan":   {q: "select * from user_plan"},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
 		"insertPlan": {q: "insert into \"user_plan\" (user_id, is_active, begin_date, invest) values ($1,$2,$3,$4);"},
@@ -106,7 +106,9 @@ func (d Data) List() ([]BotUser, error) {
 }
 
 func (d Data) Delete(id int64) error {
-	panic("implement me")
+	delUser := d.Stmts["deleteUser"].stmt
+	_, err := delUser.Exec(id)
+	return err
 }
 
 func (d Data) Update(id int64, user BotUser) error {

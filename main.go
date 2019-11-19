@@ -57,6 +57,10 @@ func main() {
 			continue
 		}
 		fmt.Println(update.Message.Text)
+		user, err := GetUser(update.Message.Chat.ID)
+		if err != nil {
+			logrus.Error(err)
+		}
 		switch update.Message.Text {
 		case "Precios":
 			prices, err := GetPrices()
@@ -77,7 +81,7 @@ func main() {
 			}
 			break
 		case "Deposito":
-			if !UserExist(update.Message.Chat.ID) {
+			if user.GetDepositAddress() == "" {
 				address, err := GetAddress()
 				if err != nil {
 					logrus.Error(err)
@@ -85,15 +89,22 @@ func main() {
 				if err := SetAddrsToUser(update.Message.Chat.ID, address); err != nil {
 					logrus.Error(err)
 				}
-				msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, fmt.Sprintf(
-					" Envie la cantidad que desea invertir a la siguiente direccion: \n <code>%s</code> ", address))
+				user, err = GetUser(user.GetID())
 				if err != nil {
 					logrus.Error(err)
 				}
-				if _, err := bot.Send(msg); err != nil {
-					logrus.Error(err)
-				}
 			}
+
+			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, fmt.Sprintf(
+				" Envie la cantidad que desea invertir a la siguiente direccion: \n <code>%s</code> ",
+				user.GetDepositAddress()))
+			if err != nil {
+				logrus.Error(err)
+			}
+			if _, err := bot.Send(msg); err != nil {
+				logrus.Error(err)
+			}
+
 			break
 		default:
 			inviteLink := fmt.Sprintf("https://t.me/Prebs_bot?start=%d", update.Message.Chat.ID)
