@@ -119,7 +119,7 @@ func main() {
 			}
 
 			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, fmt.Sprintf(
-				" <h5>Envie la cantidad que desea invertir a la siguiente direccion:</h5> \n <code>%s</code> ",
+				" Envie la cantidad que desea invertir a la siguiente direccion: \n <code>%s</code> ",
 				user.GetDepositAddress()))
 			if err != nil {
 				logrus.Error(err)
