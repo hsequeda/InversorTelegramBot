@@ -73,9 +73,7 @@ func main() {
 
 		// Verify if message is "/start+parent_id message"
 		if ok, _ := regexp.MatchString("(^/start [\\d#]+$)", update.Message.Text); ok {
-			logrus.Info("Inside RegExp Check")
 			if !UserExist(update.Message.Chat.ID) {
-				logrus.Info("Inside user exist")
 				if err := AddUser(update.Message.Chat.ID, getParentIdFromMessage(update.Message.Text)); err != nil {
 					logrus.Error(err)
 				}
@@ -106,6 +104,7 @@ func main() {
 			break
 		case "Deposito":
 			if user.GetDepositAddress() == "" {
+				logrus.Info("Into deposit address")
 				address, err := GetAddress()
 				if err != nil {
 					logrus.Error(err)
