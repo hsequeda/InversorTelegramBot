@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
+	"time"
 )
 
 const (
@@ -44,7 +45,7 @@ func InitDb() error {
 		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
 		"insertPlan": {q: "insert into \"user_plan\" (user_id, is_active, begin_date, invest) values ($1,$2,$3,$4);"},
-		"updatePlan": {q: "update user_plan set is_active=false where (begin_date::date + '90 day'::interval)>?;"},
+		"updatePlan": {q: "update \"user_plan\" set is_active=false where (begin_date::date + '90 day'::interval)>?;"},
 		"listTx":     {q: "select * from user_tx"},
 		"getTx":      {q: "select * from \"user_tx\" where user_id=$1;"},
 		"insertTx":   {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id) values ($1,$2,$3,$4);"},
@@ -86,6 +87,11 @@ func (d Data) Get(id int64) (BotUser, error) {
 		Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId); err != nil {
 		return nil, err
 	}
+
+	if err := d.updateDatePlans(); err != nil {
+		return nil, err
+	}
+
 	p, err := data.getPlans(u.Id)
 	if err != nil {
 		return nil, err
@@ -177,6 +183,14 @@ func (d Data) getTxs(userId int64) ([]UserTransaction, error) {
 		txs = append(txs, &tx)
 	}
 	return txs, nil
+}
+
+func (d *Data) updateDatePlans() error {
+	updateDatePlans := data.Stmts["updatePlan"].stmt
+	if _, err := updateDatePlans.Exec(time.Now()); err != nil {
+		return err
+	}
+	return nil
 }
 
 func errUserNotFound(id int64) error {

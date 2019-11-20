@@ -97,7 +97,7 @@ func AddTransactionToUser(id int64, isDeposit bool, txId, value string) error {
 	return nil
 }
 
-func AddUser(id int64) error {
+func AddUser(id, parentId int64) error {
 	if _, err := data.Insert(&User{Id: id}); err != nil {
 		return err
 	}
@@ -105,12 +105,5 @@ func AddUser(id int64) error {
 }
 
 func GetUser(id int64) (BotUser, error) {
-	if UserExist(id) {
-		return data.Get(id)
-	} else {
-		if err := AddUser(id); err != nil {
-			return nil, err
-		}
-		return data.Get(id)
-	}
+	return data.Get(id)
 }

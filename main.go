@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	_ "github.com/sirupsen/logrus"
 	"net/http"
+	"regexp"
 )
 
 var (
@@ -17,25 +18,36 @@ var (
 )
 
 func init() {
-	var err error
-	key = os.Getenv("APIKEY")
-	if key == "" {
-		logrus.Error("$APIKEY is empty")
-	}
-	port = os.Getenv("PORT")
-	if key == "" {
-		logrus.Error("$PORT is empty")
-	}
-
-	channel_id = os.Getenv("CHNNL_ID")
-	if channel_id == "" {
-		logrus.Error("error obtains $CHNNL_ID, can by empty")
-	}
-	if key == "" {
-		logrus.Error("$PORT is empty")
-	}
-	bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
-	if err != nil {
+	// var err error
+	// key = os.Getenv("APIKEY")
+	// if key == "" {
+	// 	logrus.Error("$APIKEY is empty")
+	// }
+	// port = os.Getenv("PORT")
+	// if key == "" {
+	// 	logrus.Error("$PORT is empty")
+	// }
+	//
+	// channelId = os.Getenv("CHNNL_ID")
+	// if channelId == "" {
+	// 	logrus.Error("error obtains $CHNNL_ID, can by empty")
+	// }
+	// if key == "" {
+	// 	logrus.Error("$PORT is empty")
+	// }
+	// bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
+	// if err != nil {
+	// 	logrus.Error(err)
+	// }
+	// bot.Debug = true
+	// info, err := bot.GetWebhookInfo()
+	// if err != nil {
+	// 	logrus.Error(err)
+	// }
+	// if info.LastErrorDate != 0 {
+	// 	logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
+	// }
+	if err := InitDb(); err != nil {
 		logrus.Error(err)
 	}
 }
@@ -56,7 +68,16 @@ func main() {
 		if update.Message.Chat.Type != "private" {
 			continue
 		}
-		fmt.Println(update.Message.Text)
+		// user, err := GetUser(update.Message.Chat.ID)
+
+		// Verify if message is "/start+parent_id message"
+		if ok, _ := regexp.MatchString("(^/start [\\d#]+$)", update.Message.Text); ok &&
+			!UserExist(update.Message.Chat.ID) {
+
+			if err := AddUser(update.Message.Chat.ID, getParentIdFromMessage(update.Message.Text)); err != nil {
+				logrus.Error(err)
+			}
+		}
 		user, err := GetUser(update.Message.Chat.ID)
 		if err != nil {
 			logrus.Error(err)
