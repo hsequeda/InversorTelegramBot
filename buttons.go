@@ -16,5 +16,6 @@ func (*Button) InitButton(id int64, userName, msg string) (tgbotapi.Chattable, e
 
 	sendMsg := tgbotapi.NewMessage(id, msg)
 	sendMsg.ReplyMarkup = initReplyKeyboard
+	sendMsg.ParseMode = "html"
 	return sendMsg, nil
 }

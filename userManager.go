@@ -101,7 +101,7 @@ func AddTransactionToUser(id int64, isDeposit bool, txId, value string) error {
 }
 
 func AddUser(id, parentId int64) error {
-	logrus.Info("AddUser")
+	logrus.Info("Add user")
 
 	if id != parentId {
 		if _, err := data.Insert(&User{Id: id, ParentId: parentId}); err != nil {
@@ -116,5 +116,6 @@ func AddUser(id, parentId int64) error {
 }
 
 func GetUser(id int64) (BotUser, error) {
+	logrus.Info("Get user")
 	return data.Get(id)
 }
