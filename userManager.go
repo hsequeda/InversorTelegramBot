@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
 )
@@ -98,7 +99,8 @@ func AddTransactionToUser(id int64, isDeposit bool, txId, value string) error {
 }
 
 func AddUser(id, parentId int64) error {
-	if _, err := data.Insert(&User{Id: id}); err != nil {
+	logrus.Info("From AddUser: ", id)
+	if _, err := data.Insert(&User{Id: id, ParentId: parentId}); err != nil {
 		return err
 	}
 	return nil

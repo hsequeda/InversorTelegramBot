@@ -72,11 +72,13 @@ func main() {
 		// user, err := GetUser(update.Message.Chat.ID)
 
 		// Verify if message is "/start+parent_id message"
-		if ok, _ := regexp.MatchString("(^/start [\\d#]+$)", update.Message.Text); ok &&
-			!UserExist(update.Message.Chat.ID) {
-
-			if err := AddUser(update.Message.Chat.ID, getParentIdFromMessage(update.Message.Text)); err != nil {
-				logrus.Error(err)
+		if ok, _ := regexp.MatchString("(^/start [\\d#]+$)", update.Message.Text); ok {
+			logrus.Info("Inside RegExp Check")
+			if !UserExist(update.Message.Chat.ID) {
+				logrus.Info("Inside user exist")
+				if err := AddUser(update.Message.Chat.ID, getParentIdFromMessage(update.Message.Text)); err != nil {
+					logrus.Error(err)
+				}
 			}
 		}
 		user, err := GetUser(update.Message.Chat.ID)
