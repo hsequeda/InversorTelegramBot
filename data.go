@@ -88,9 +88,9 @@ func (d Data) Get(id int64) (BotUser, error) {
 		return nil, err
 	}
 
-	if err := d.updateDatePlans(); err != nil {
-		return nil, err
-	}
+	// if err := d.updateDatePlans(); err != nil {
+	// 	return nil, err
+	// }
 
 	p, err := data.getPlans(u.Id)
 	if err != nil {
