@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	_ "github.com/sirupsen/logrus"
 	"net/http"
+	"os"
 	"regexp"
 )
 
@@ -18,35 +19,35 @@ var (
 )
 
 func init() {
-	// var err error
-	// key = os.Getenv("APIKEY")
-	// if key == "" {
-	// 	logrus.Error("$APIKEY is empty")
-	// }
-	// port = os.Getenv("PORT")
-	// if key == "" {
-	// 	logrus.Error("$PORT is empty")
-	// }
-	//
-	// channelId = os.Getenv("CHNNL_ID")
-	// if channelId == "" {
-	// 	logrus.Error("error obtains $CHNNL_ID, can by empty")
-	// }
-	// if key == "" {
-	// 	logrus.Error("$PORT is empty")
-	// }
-	// bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
-	// if err != nil {
-	// 	logrus.Error(err)
-	// }
-	// bot.Debug = true
-	// info, err := bot.GetWebhookInfo()
-	// if err != nil {
-	// 	logrus.Error(err)
-	// }
-	// if info.LastErrorDate != 0 {
-	// 	logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
-	// }
+	var err error
+	key = os.Getenv("APIKEY")
+	if key == "" {
+		logrus.Error("$APIKEY is empty")
+	}
+	port = os.Getenv("PORT")
+	if key == "" {
+		logrus.Error("$PORT is empty")
+	}
+
+	channelId = os.Getenv("CHNNL_ID")
+	if channelId == "" {
+		logrus.Error("error obtains $CHNNL_ID, can by empty")
+	}
+	if key == "" {
+		logrus.Error("$PORT is empty")
+	}
+	bot, err = tgbotapi.NewBotAPI("931110470:AAHmRc3jqseVa8W5qTrgjueR6HhU0PIOuTI")
+	if err != nil {
+		logrus.Error(err)
+	}
+	bot.Debug = true
+	info, err := bot.GetWebhookInfo()
+	if err != nil {
+		logrus.Error(err)
+	}
+	if info.LastErrorDate != 0 {
+		logrus.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
+	}
 	if err := InitDb(); err != nil {
 		logrus.Error(err)
 	}
