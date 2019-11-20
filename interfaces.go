@@ -37,6 +37,7 @@ type UserTransaction interface {
 }
 
 type UserPlan interface {
+	GetId() int64
 	IsActive() bool
 	GetStartDate() time.Time
 	GetPlanType() PlanType

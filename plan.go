@@ -21,6 +21,7 @@ type Plan struct {
 	Active   bool
 	Type     PlanType
 	Invested int64
+	Id       int64
 }
 
 func (p *Plan) IsActive() bool {
@@ -39,11 +40,15 @@ func (p *Plan) SetPlanType(planType PlanType) {
 	p.Type = planType
 }
 
-func (p Plan) GetAmount() int64 {
+func (p *Plan) GetAmount() int64 {
 	return p.Invested
 }
 
-func (p Plan) SetAmount(investment int64) {
+func (p *Plan) SetAmount(investment int64) {
+}
+
+func (p *Plan) GetId() int64 {
+	return p.Id
 }
 
 func getPlanTypeForValue(value int64) PlanType {

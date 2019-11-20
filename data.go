@@ -39,9 +39,9 @@ func InitDb() error {
 		"listUser":   {q: "select * from \"User\";"},
 		"getUser":    {q: "select * from \"User\" where id=$1;"},
 		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id) values ($1,$2,$3,$4,$5);"},
-		"updateUser": {q: "update \"User\" set name=$1 where id=$2;"},
+		"updateUser": {q: "update \"User\" set name=$1,deposit_addrs=$2, receive_addrs=$3 where id=$4;"},
 		"deleteUser": {q: "delete from \"User\" where id=$1"},
-		"listPlan":   {q: "select * from user_plan"},
+		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
 		"insertPlan": {q: "insert into \"user_plan\" (user_id, is_active, begin_date, invest) values ($1,$2,$3,$4);"},
 		"updatePlan": {q: "update user_plan set is_active=false where (begin_date::date + '90 day'::interval)>?;"},
@@ -112,7 +112,13 @@ func (d Data) Delete(id int64) error {
 }
 
 func (d Data) Update(id int64, user BotUser) error {
-	panic("implement me")
+	updUser := d.Stmts["updateUser"].stmt
+	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (d Data) insertPlan(userId int64, plan UserPlan) error {
@@ -145,7 +151,7 @@ func (d Data) getPlans(userId int64) ([]UserPlan, error) {
 	for rows.Next() {
 		p := Plan{}
 
-		if err := rows.Scan(&userId, &p.Active, &p.Start, &p.Invested); err != nil {
+		if err := rows.Scan(&userId, &p.Active, &p.Start, &p.Invested, &p.Id); err != nil {
 			return nil, err
 		}
 		plans = append(plans, &p)

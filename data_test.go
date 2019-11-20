@@ -130,7 +130,9 @@ func TestData_Get(t *testing.T) {
 			assert.Equal(t, got.GetActivePlans()[0].GetStartDate().Day(), tt.want.GetActivePlans()[0].GetStartDate().Day())
 			assert.Equal(t, got.GetDepositTransaction(), tt.want.GetDepositTransaction())
 			assert.Equal(t, got.GetReceiveTransaction(), tt.want.GetReceiveTransaction())
-
+			if err := data.Delete(tt.args.id); err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
