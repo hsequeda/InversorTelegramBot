@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -72,7 +73,7 @@ func SetAddrsToUser(id int64, addr string) error {
 // UserExist verify if an user exist into database.
 func UserExist(id int64) bool {
 	_, err := data.Get(id)
-	if err != errUserNotFound(id) {
+	if err != sql.ErrNoRows {
 		return true
 	}
 	return false
