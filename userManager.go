@@ -63,6 +63,7 @@ func SetAddrsToUser(id int64, addr string) error {
 		return err
 	}
 	u.SetDepositAddress(addr)
+	logrus.Info(u.GetDepositAddress())
 	if err := data.Update(id, u); err != nil {
 		return err
 	}
