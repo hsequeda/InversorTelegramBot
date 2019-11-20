@@ -108,7 +108,22 @@ func (d Data) Get(id int64) (BotUser, error) {
 }
 
 func (d Data) List() ([]BotUser, error) {
-	panic("implement me")
+	listUser := d.Stmts["listUser"].stmt
+	rows, err := listUser.Query()
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var users = make([]BotUser, 0)
+	for rows.Next() {
+		var u = User{}
+		if err := rows.Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId); err != nil {
+			return nil, err
+		}
+		users = append(users, &u)
+	}
+	return users, nil
 }
 
 func (d Data) Delete(id int64) error {

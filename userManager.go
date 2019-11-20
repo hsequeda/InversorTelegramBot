@@ -101,9 +101,16 @@ func AddTransactionToUser(id int64, isDeposit bool, txId, value string) error {
 }
 
 func AddUser(id, parentId int64) error {
-	logrus.Info("From AddUser: ", id)
-	if _, err := data.Insert(&User{Id: id, ParentId: parentId}); err != nil {
-		return err
+	logrus.Info("AddUser")
+
+	if id != parentId {
+		if _, err := data.Insert(&User{Id: id, ParentId: parentId}); err != nil {
+			return err
+		}
+	} else {
+		if _, err := data.Insert(&User{Id: id, ParentId: 0}); err != nil {
+			return err
+		}
 	}
 	return nil
 }
