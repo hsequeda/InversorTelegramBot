@@ -119,7 +119,7 @@ func (d Data) Delete(id int64) error {
 
 func (d Data) Update(id int64, user BotUser) error {
 	updUser := d.Stmts["updateUser"].stmt
-	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress())
+	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(), user.GetID())
 	if err != nil {
 		return err
 	}
