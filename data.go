@@ -163,12 +163,13 @@ func (d Data) Update(id int64, user BotUser) error {
 			}
 		}
 	}
-
+	logrus.Info("Update")
 	txs, err := d.getTxs(id)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 	userTxs := append(user.GetReceiveTransaction(), user.GetDepositTransaction()...)
+	logrus.Infof("%#v", userTxs)
 	for _, uTx := range userTxs {
 		exist := false
 		for _, tx := range txs {
