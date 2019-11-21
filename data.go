@@ -38,14 +38,15 @@ func InitDb() error {
 		return err
 	}
 	data.Stmts = map[string]*stmtConfig{
-		"listUser":   {q: "select * from \"User\";"},
-		"getUser":    {q: "select * from \"User\" where id=$1;"},
-		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs,balance, parent_id) values ($1,$2,$3,$4,$5);"},
-		"updateUser": {q: "update \"User\" set name=$1,deposit_addrs=$2, receive_addrs=$3 balance=$4 where id=$5;"},
+		"listUser": {q: "select * from \"User\";"},
+		"getUser":  {q: "select * from \"User\" where id=$1;"},
+		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id, balance)" +
+			" values ($1,$2,$3,$4,$5,$6);"},
+		"updateUser": {q: "update \"User\" set name=$1, deposit_addrs=$2, receive_addrs=$3 balance=$4 where id=$5;"},
 		"deleteUser": {q: "delete from \"User\" where id=$1"},
 		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
-		"insertPlan": {q: "insert into \"user_plan\" (user_id, begin_date, last_payment, end_date, invest)" +
+		"insertPlan": {q: "insert into \"user_plan\" (user_id, begin_date, invest, last_payment, end_date)" +
 			" values ($1,$2,$3,$4,$5,$6);"},
 		"updatePlan": {q: "update \"user_plan\" set last_payment=$1 where plan_id=$2;"},
 		"listTx":     {q: "select * from user_tx"},
@@ -63,7 +64,7 @@ func (d Data) Insert(u BotUser) (int64, error) {
 	insertUser := data.Stmts["insertUser"].stmt
 
 	_, err := insertUser.Exec(u.GetID(), u.GetName(), u.GetDepositAddress(),
-		u.GetReceiveAddress(), u.GetParentId())
+		u.GetReceiveAddress(), u.GetParentId(), u.GetBalance())
 	if err != nil {
 		return 0, err
 	}
@@ -86,7 +87,7 @@ func (d Data) Get(id int64) (BotUser, error) {
 	getUser := d.Stmts["getUser"].stmt
 	u := User{}
 	if err := getUser.QueryRow(id).
-		Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId); err != nil {
+		Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId, &u.Balance); err != nil {
 		return nil, err
 	}
 
@@ -120,7 +121,7 @@ func (d Data) List() ([]BotUser, error) {
 	var users = make([]BotUser, 0)
 	for rows.Next() {
 		var u = User{}
-		if err := rows.Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId); err != nil {
+		if err := rows.Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId, &u.Balance); err != nil {
 			return nil, err
 		}
 		users = append(users, &u)
@@ -222,7 +223,7 @@ func (d Data) getPlans(userId int64) ([]UserPlan, error) {
 	for rows.Next() {
 		p := Plan{}
 
-		if err := rows.Scan(&userId, &p.Id, &p.Start, &p.LastPayment, &p.End, &p.Invested, &p.Id); err != nil {
+		if err := rows.Scan(&userId, &p.Id, &p.Start, &p.Invested, &p.LastPayment, &p.End, &p.Id); err != nil {
 			return nil, err
 		}
 		plans = append(plans, &p)

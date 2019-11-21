@@ -74,9 +74,13 @@ func main() {
 		// Verify if message is "/start+parent_id message"
 		if ok, _ := regexp.MatchString("(^/start [\\d#]+$)", update.Message.Text); ok {
 			if !UserExist(update.Message.Chat.ID) {
+				var userName = update.Message.From.UserName
+				if userName == "" {
+					userName = update.Message.From.FirstName
+				}
 				if err := AddUser(update.Message.Chat.ID,
 					getParentIdFromMessage(update.Message.Text),
-					update.Message.From.UserName); err != nil {
+					userName); err != nil {
 					logrus.Error(err)
 				}
 			}
@@ -131,9 +135,30 @@ func main() {
 			}
 
 			break
+		case user.GetName():
+
+			user, err := GetUser(user.GetID())
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			text := fmt.Sprintf(
+				"Saldo de la cuenta:\n"+
+					"Saldo Extraible:\n"+
+					"%d",
+				user.GetBalance())
+			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
+			if err != nil {
+				logrus.Error(err)
+			}
+			_, err = bot.Send(msg)
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			break
 		default:
 			inviteLink := fmt.Sprintf("https://t.me/Prebs_bot?start=%d", update.Message.Chat.ID)
-			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.UserName, inviteLink)
+
+			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), inviteLink)
 			if err != nil {
 				logrus.Error(err)
 			}
