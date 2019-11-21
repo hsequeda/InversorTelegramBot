@@ -144,8 +144,8 @@ func main() {
 			text := fmt.Sprintf(
 				"Saldo de la cuenta:\n"+
 					"Saldo Extraible:\n"+
-					"%d",
-				float64(user.GetBalance()/100000000))
+					"%f",
+				float32(user.GetBalance()/100000000))
 			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
 			if err != nil {
 				logrus.Error(err)
