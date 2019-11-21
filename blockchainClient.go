@@ -97,7 +97,9 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 			fmt.Sprintf("Nueva inversion:\n "+
 				"%s ha invertido %s BTC!\n"+
 				"Transaction ID:\n"+
-				"%s", u.GetName(), value, txid))
+				"<a href=\"https://blockchain.info/tx/%s\">%s</a>", u.GetName(), value, txid, txid))
+		msg.ParseMode = "html"
+
 		if _, err := bot.Send(msg); err != nil {
 			logrus.Error(err)
 		}
