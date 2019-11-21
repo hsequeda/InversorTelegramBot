@@ -34,7 +34,7 @@ func (button2 *Button) TransactionHistoryBtn(id int64) (tgbotapi.Chattable, erro
 	sort.Slice(transactions, func(i, j int) bool {
 		return transactions[i].GetDate().After(transactions[j].GetDate())
 	})
-	var msg = "<b>Transaction ID:</b>\n"
+	var msg = "<b>Transactions ID's:</b>\n"
 	for e := range transactions {
 		if e > 15 {
 			break
