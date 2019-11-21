@@ -145,7 +145,7 @@ func main() {
 				"Saldo de la cuenta:\n"+
 					"Saldo Extraible:\n"+
 					"%d",
-				user.GetBalance())
+				float64(user.GetBalance()/100000000))
 			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
 			if err != nil {
 				logrus.Error(err)
@@ -154,6 +154,7 @@ func main() {
 			if err != nil {
 				logrus.Fatal(err)
 			}
+
 			break
 		case "Movimientos", "Actualizar":
 			text := "Aqui puede encontrar las ultimas 15 transacciones relacionadas con su cuenta."
