@@ -94,7 +94,7 @@ func (u *User) AddTransaction(transaction UserTransaction) {
 func (u *User) GetActivePlans() []UserPlan {
 	var plans []UserPlan
 	for e := range u.Plans {
-		if u.Plans[e].GetEndDate().Before(u.Plans[e].GetLastPaymentDate()) {
+		if u.Plans[e].GetEndDate().After(u.Plans[e].GetLastPaymentDate()) {
 			plans = append(plans, u.Plans[e])
 		}
 	}

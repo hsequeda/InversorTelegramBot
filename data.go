@@ -147,6 +147,7 @@ func (d Data) Update(id int64, user BotUser) error {
 		return err
 	}
 
+	fmt.Printf("%#v", user.GetActivePlans())
 	for _, uPlan := range user.GetActivePlans() {
 		exist := false
 		for _, plan := range plans {
@@ -192,6 +193,7 @@ func (d Data) Update(id int64, user BotUser) error {
 }
 
 func (d Data) insertPlan(userId int64, plan UserPlan) error {
+	logrus.Info("insert plan")
 	insertPlan := d.Stmts["insertPlan"].stmt
 	fmt.Printf("%#v", plan)
 	if _, err := insertPlan.Exec(userId, plan.GetStartDate(),
@@ -202,7 +204,7 @@ func (d Data) insertPlan(userId int64, plan UserPlan) error {
 }
 
 func (d Data) insertTx(userId int64, tx UserTransaction) error {
-	logrus.Info("Update transaction")
+	logrus.Info("insert transaction")
 	insertTx := d.Stmts["insertTx"].stmt
 	if _, err := insertTx.Exec(userId, tx.IsDepositTx(),
 		tx.GetAmount(), tx.GetTxId()); err != nil {
@@ -260,6 +262,7 @@ func (d *Data) updateDatePlans() error {
 }
 
 func (d Data) updatePlan(plan UserPlan) error {
+	logrus.Info("Update plan")
 	updtPlanStmt := d.Stmts["updatePlan"].stmt
 	_, err := updtPlanStmt.Exec(plan.GetLastPaymentDate())
 	return err
