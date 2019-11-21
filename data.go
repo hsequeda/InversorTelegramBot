@@ -155,15 +155,14 @@ func (d Data) Update(id int64, user BotUser) error {
 					return err
 				}
 			}
-			if !exist {
-				if err := d.insertPlan(user.GetID(), uPlan); err != nil {
-					return err
-				}
-				exist = false
+		}
+		if !exist {
+			if err := d.insertPlan(user.GetID(), uPlan); err != nil {
+				return err
 			}
+			exist = false
 		}
 	}
-	logrus.Info("Update")
 	txs, err := d.getTxs(id)
 	if err != nil && err != sql.ErrNoRows {
 		return err
@@ -179,12 +178,12 @@ func (d Data) Update(id int64, user BotUser) error {
 					return err
 				}
 			}
-			if !exist {
-				if err := d.insertTx(user.GetID(), uTx); err != nil {
-					return err
-				}
-				exist = false
+		}
+		if !exist {
+			if err := d.insertTx(user.GetID(), uTx); err != nil {
+				return err
 			}
+			exist = false
 		}
 	}
 
@@ -201,6 +200,7 @@ func (d Data) insertPlan(userId int64, plan UserPlan) error {
 }
 
 func (d Data) insertTx(userId int64, tx UserTransaction) error {
+	logrus.Info("Update transaction")
 	insertTx := d.Stmts["insertTx"].stmt
 	if _, err := insertTx.Exec(userId, tx.IsDepositTx(),
 		tx.GetAmount(), tx.GetTxId()); err != nil {
