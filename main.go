@@ -155,7 +155,7 @@ func main() {
 				logrus.Fatal(err)
 			}
 			break
-		case "Movimientos":
+		case "Movimientos", "Actualizar":
 			text := "Aqui puede encontrar las ultimas 15 transacciones relacionadas con su cuenta."
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 			if _, err := bot.Send(msg); err != nil {

@@ -24,7 +24,7 @@ func (*Button) InitButton(id int64, userName, msg string) (tgbotapi.Chattable, e
 
 func (button2 *Button) TransactionHistoryBtn(id int64) (tgbotapi.Chattable, error) {
 	var transacitonHistoryKeyboard = tgbotapi.NewReplyKeyboard(
-		tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Update"), tgbotapi.NewKeyboardButton("Atras")))
+		tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Actualizar"), tgbotapi.NewKeyboardButton("Atras")))
 
 	user, err := GetUser(id)
 	if err != nil {
