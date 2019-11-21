@@ -160,18 +160,28 @@ func main() {
 			}
 			balance := decimal.New(user.GetBalance(), -Exponent)
 			activeInversions, err := GetActiveInversions(user.GetID())
-
 			if err != nil {
 				logrus.Fatal(err)
 			}
+			actInversFixed := decimal.New(activeInversions, -Exponent)
+
+			totalProfit, err := GetTotalProfit(user.GetID())
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			ttProfFixed := decimal.New(totalProfit, -Exponent)
+
 			text := fmt.Sprintf(
 				"Saldo de la cuenta:\n"+
 					"Saldo Extraible:\n"+
-					"%s\n,"+
+					"%s\n"+
 					"Inversiones Activas:\n"+
+					"%s\n"+
+					"Ganancia Total:\n"+
 					"%s",
 				balance.StringFixed(Exponent),
-				activeInversions,
+				actInversFixed.StringFixed(Exponent),
+				ttProfFixed.StringFixed(Exponent),
 			)
 			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
 			if err != nil {

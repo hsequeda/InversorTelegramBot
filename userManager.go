@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
@@ -165,10 +164,10 @@ func GetUser(id int64) (BotUser, error) {
 	return data.Get(id)
 }
 
-func GetActiveInversions(id int64) (string, error) {
+func GetActiveInversions(id int64) (int64, error) {
 	user, err := data.Get(id)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	plans := user.GetActivePlans()
 	var inversions int64
@@ -176,5 +175,28 @@ func GetActiveInversions(id int64) (string, error) {
 		inversions += plans[e].GetAmount()
 	}
 
-	return decimal.New(inversions, -Exponent).StringFixed(Exponent), nil
+	return inversions, nil
+}
+
+func GetTotalProfit(id int64) (int64, error) {
+	user, err := data.Get(id)
+	if err != nil {
+		return 0, err
+	}
+	plans := user.GetActivePlans()
+	var inversions int64
+	for e := range plans {
+		switch plans[e].GetPlanType() {
+		case Type1:
+			inversions += int64(float64(plans[e].GetAmount()) * 0.03 * 90)
+			break
+		case Type2:
+			inversions += int64(float64(plans[e].GetAmount()) * 0.035 * 90)
+			break
+		case Type3:
+			inversions += int64(float64(plans[e].GetAmount()) * 0.038 * 90)
+			break
+		}
+	}
+	return inversions, nil
 }
