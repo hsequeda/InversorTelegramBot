@@ -225,7 +225,7 @@ func (d Data) getPlans(userId int64) ([]UserPlan, error) {
 	for rows.Next() {
 		p := Plan{}
 
-		if err := rows.Scan(&userId, &p.Id, &p.Start, &p.Invested, &p.LastPayment, &p.End, &p.Id); err != nil {
+		if err := rows.Scan(&userId, &p.Start, &p.Invested, &p.Id, &p.LastPayment, &p.End); err != nil {
 			return nil, err
 		}
 		plans = append(plans, &p)
