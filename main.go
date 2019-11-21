@@ -138,26 +138,6 @@ func main() {
 
 			break
 		case user.GetName():
-
-			user, err := GetUser(user.GetID())
-			if err != nil {
-				logrus.Fatal(err)
-			}
-			balance := decimal.New(user.GetBalance(), -Exponent)
-			text := fmt.Sprintf(
-				"Saldo de la cuenta:\n"+
-					"Saldo Extraible:\n"+
-					"%s",
-				balance.StringFixed(Exponent))
-			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
-			if err != nil {
-				logrus.Error(err)
-			}
-			_, err = bot.Send(msg)
-			if err != nil {
-				logrus.Fatal(err)
-			}
-
 			break
 		case "Movimientos", "Actualizar":
 			text := "Aqui puede encontrar las ultimas 15 transacciones relacionadas con su cuenta."
@@ -172,6 +152,37 @@ func main() {
 			if _, err := bot.Send(msg2); err != nil {
 				logrus.Fatal(err)
 			}
+			break
+		case "Balance":
+			user, err := GetUser(user.GetID())
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			balance := decimal.New(user.GetBalance(), -Exponent)
+			activeInversions, err := GetActiveInversions(user.GetID())
+
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			text := fmt.Sprintf(
+				"Saldo de la cuenta:\n"+
+					"Saldo Extraible:\n"+
+					"%s\n,"+
+					"Inversiones Activas:\n"+
+					"%s",
+				balance.StringFixed(Exponent),
+				activeInversions,
+			)
+			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
+			if err != nil {
+				logrus.Error(err)
+			}
+			_, err = bot.Send(msg)
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			break
+		case "Referidos":
 			break
 		default:
 			inviteLink := fmt.Sprintf("https://t.me/Prebs_bot?start=%d", update.Message.Chat.ID)
