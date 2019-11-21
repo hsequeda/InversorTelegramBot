@@ -75,7 +75,6 @@ func main() {
 		if ok, _ := regexp.MatchString("(^/start [\\d#]+$)", update.Message.Text); ok {
 			if !UserExist(update.Message.Chat.ID) {
 				var userName = update.Message.From.UserName
-				logrus.Info(userName)
 				if userName == "" {
 					userName = update.Message.From.FirstName
 				}

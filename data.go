@@ -62,7 +62,6 @@ func InitDb() error {
 
 func (d Data) Insert(u BotUser) (int64, error) {
 	insertUser := data.Stmts["insertUser"].stmt
-	fmt.Println(u.GetName())
 	_, err := insertUser.Exec(u.GetID(), u.GetName(), u.GetDepositAddress(),
 		u.GetReceiveAddress(), u.GetParentId(), u.GetBalance())
 	if err != nil {

@@ -116,7 +116,7 @@ func AddUser(id, parentId int64, name string) error {
 			return err
 		}
 	} else {
-		if _, err := data.Insert(&User{Id: id, ParentId: 0}); err != nil {
+		if _, err := data.Insert(&User{Id: id, Name: name, ParentId: 0}); err != nil {
 			return err
 		}
 	}
