@@ -74,7 +74,9 @@ func main() {
 		// Verify if message is "/start+parent_id message"
 		if ok, _ := regexp.MatchString("(^/start [\\d#]+$)", update.Message.Text); ok {
 			if !UserExist(update.Message.Chat.ID) {
-				if err := AddUser(update.Message.Chat.ID, getParentIdFromMessage(update.Message.Text)); err != nil {
+				if err := AddUser(update.Message.Chat.ID,
+					getParentIdFromMessage(update.Message.Text),
+					update.Message.From.UserName); err != nil {
 					logrus.Error(err)
 				}
 			}
@@ -93,7 +95,7 @@ func main() {
 			for k, v := range prices {
 				text += fmt.Sprintf("BTC to %s: %s%f\n", k, v.Symbol, v.Last)
 			}
-			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, text)
+			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.UserName, text)
 			if err != nil {
 				logrus.Error(err)
 			}
@@ -118,7 +120,7 @@ func main() {
 				}
 			}
 
-			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, fmt.Sprintf(
+			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.UserName, fmt.Sprintf(
 				"Envie la cantidad que desea invertir a la siguiente direccion: \n <code>%s</code> ",
 				user.GetDepositAddress()))
 			if err != nil {
@@ -131,7 +133,7 @@ func main() {
 			break
 		default:
 			inviteLink := fmt.Sprintf("https://t.me/Prebs_bot?start=%d", update.Message.Chat.ID)
-			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.FirstName, inviteLink)
+			msg, err := button.InitButton(update.Message.Chat.ID, update.Message.From.UserName, inviteLink)
 			if err != nil {
 				logrus.Error(err)
 			}
