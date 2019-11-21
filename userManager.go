@@ -101,6 +101,7 @@ func AddTransactionToUser(id int64, isDeposit bool, txId, value string) error {
 		TxID:      txId,
 		IsDeposit: isDeposit,
 		Amount:    amount,
+		Date:      getDate(),
 	})
 
 	if err := data.Update(u.GetID(), u); err != nil {

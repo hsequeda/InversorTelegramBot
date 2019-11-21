@@ -36,6 +36,7 @@ type UserTransaction interface {
 	SetTxId(txId string)
 	IsDepositTx() bool
 	GetAmount() int64
+	GetDate() time.Time
 }
 
 type UserPlan interface {

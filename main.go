@@ -155,6 +155,20 @@ func main() {
 				logrus.Fatal(err)
 			}
 			break
+		case "Movimientos":
+			text := "Aqui puede encontrar las ultimas 15 transacciones relacionadas con su cuenta."
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
+			if _, err := bot.Send(msg); err != nil {
+				logrus.Fatal(err)
+			}
+			msg2, err := button.TransactionHistoryBtn(update.Message.Chat.ID)
+			if err != nil {
+				logrus.Error(err)
+			}
+			if _, err := bot.Send(msg2); err != nil {
+				logrus.Fatal(err)
+			}
+			break
 		default:
 			inviteLink := fmt.Sprintf("https://t.me/Prebs_bot?start=%d", update.Message.Chat.ID)
 

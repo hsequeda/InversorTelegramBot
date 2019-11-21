@@ -50,7 +50,7 @@ func InitDb() error {
 		"updatePlan": {q: "update \"user_plan\" set last_payment=$1 where plan_id=$2;"},
 		"listTx":     {q: "select * from user_tx"},
 		"getTx":      {q: "select * from \"user_tx\" where user_id=$1;"},
-		"insertTx":   {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id) values ($1,$2,$3,$4);"},
+		"insertTx":   {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id, tx_date) values ($1,$2,$3,$4,$5);"},
 		// "updateTx":   {q: "update user_tx set ;"},
 	}
 	for k, v := range data.Stmts {
@@ -206,7 +206,7 @@ func (d Data) insertTx(userId int64, tx UserTransaction) error {
 	logrus.Info("insert transaction")
 	insertTx := d.Stmts["insertTx"].stmt
 	if _, err := insertTx.Exec(userId, tx.IsDepositTx(),
-		tx.GetAmount(), tx.GetTxId()); err != nil {
+		tx.GetAmount(), tx.GetTxId(), tx.GetDate()); err != nil {
 		return err
 	}
 	return nil
@@ -244,7 +244,7 @@ func (d Data) getTxs(userId int64) ([]UserTransaction, error) {
 
 	for rows.Next() {
 		tx := Transaction{}
-		if err := rows.Scan(&userId, &tx.IsDeposit, &tx.Amount, &tx.TxID); err != nil {
+		if err := rows.Scan(&userId, &tx.IsDeposit, &tx.Amount, &tx.TxID, &tx.Date); err != nil {
 			return nil, err
 		}
 		txs = append(txs, &tx)
