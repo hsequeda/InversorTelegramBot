@@ -39,7 +39,7 @@ func AddInvestToUser(value string, userID int64) error {
 
 	p := createPlan(v)
 	if p != nil {
-		user.AddPlan(p)
+		user.SetPlans(append(user.GetActivePlans(), p))
 		if err := data.Update(user.GetID(), user); err != nil {
 			return err
 		}
@@ -51,10 +51,10 @@ func createPlan(value int64) *Plan {
 	planType := getPlanTypeForValue(value)
 	if planType != -1 {
 		return &Plan{
-			Start:    time.Now(),
-			Active:   true,
-			Type:     planType,
-			Invested: value,
+			Start:       getDate(),
+			End:         getDate().Add(90 * time.Hour * 24),
+			LastPayment: getDate(),
+			Invested:    value,
 		}
 	}
 	return nil
@@ -125,5 +125,39 @@ func AddUser(id, parentId int64, name string) error {
 
 func GetUser(id int64) (BotUser, error) {
 	logrus.Info("Get user")
+	user, err := data.Get(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(user.GetActivePlans()) > 0 {
+		var updtPlans = make([]UserPlan, 0)
+		for _, v := range user.GetActivePlans() {
+			var durationToPay time.Duration
+			if getDate().Equal(v.GetEndDate()) || getDate().After(v.GetEndDate()) {
+				durationToPay = v.GetEndDate().Sub(v.GetLastPaymentDate())
+			} else {
+				durationToPay = getDate().Sub(v.GetLastPaymentDate())
+			}
+			dayToPay := int64(durationToPay.Hours()) / 24
+			switch v.GetPlanType() {
+			case Type1:
+				user.SetBalance(user.GetBalance() + int64(float32(v.GetAmount()*dayToPay)*0.03))
+				break
+			case Type2:
+				user.SetBalance(user.GetBalance() + int64(float32(v.GetAmount()*dayToPay)*0.035))
+				break
+			case Type3:
+				user.SetBalance(user.GetBalance() + int64(float64(v.GetAmount()*dayToPay)*0.038))
+				break
+			}
+			v.SetLastPaymentDate(getDate())
+			updtPlans = append(updtPlans, v)
+		}
+		user.SetPlans(updtPlans)
+		if err := data.Update(user.GetID(), user); err != nil {
+			return nil, err
+		}
+	}
 	return data.Get(id)
 }

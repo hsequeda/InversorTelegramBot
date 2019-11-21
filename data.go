@@ -40,17 +40,17 @@ func InitDb() error {
 	data.Stmts = map[string]*stmtConfig{
 		"listUser":   {q: "select * from \"User\";"},
 		"getUser":    {q: "select * from \"User\" where id=$1;"},
-		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id) values ($1,$2,$3,$4,$5);"},
-		"updateUser": {q: "update \"User\" set name=$1,deposit_addrs=$2, receive_addrs=$3 where id=$4;"},
+		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs,balance, parent_id) values ($1,$2,$3,$4,$5);"},
+		"updateUser": {q: "update \"User\" set name=$1,deposit_addrs=$2, receive_addrs=$3 balance=$4 where id=$5;"},
 		"deleteUser": {q: "delete from \"User\" where id=$1"},
 		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
-		"insertPlan": {q: "insert into \"user_plan\" (user_id, is_active, begin_date, invest) values ($1,$2,$3,$4);"},
-		// "updatePlan": {q: "update \"user_plan\" set is_active=false where (begin_date::date + '90 day'::interval)>?;"},
-		// "updatePlan": {q: "update \"user_plan\" set is_active=false where plan_id=$1;"},
-		"listTx":   {q: "select * from user_tx"},
-		"getTx":    {q: "select * from \"user_tx\" where user_id=$1;"},
-		"insertTx": {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id) values ($1,$2,$3,$4);"},
+		"insertPlan": {q: "insert into \"user_plan\" (user_id, begin_date, last_payment, end_date, invest)" +
+			" values ($1,$2,$3,$4,$5,$6);"},
+		"updatePlan": {q: "update \"user_plan\" set last_payment=$1 where plan_id=$2;"},
+		"listTx":     {q: "select * from user_tx"},
+		"getTx":      {q: "select * from \"user_tx\" where user_id=$1;"},
+		"insertTx":   {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id) values ($1,$2,$3,$4);"},
 		// "updateTx":   {q: "update user_tx set ;"},
 	}
 	for k, v := range data.Stmts {
@@ -137,7 +137,8 @@ func (d Data) Delete(id int64) error {
 func (d Data) Update(id int64, user BotUser) error {
 	logrus.Info("Update")
 	updUser := d.Stmts["updateUser"].stmt
-	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(), user.GetID())
+	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(),
+		user.GetBalance(), user.GetID())
 	if err != nil {
 		return err
 	}
@@ -149,7 +150,7 @@ func (d Data) Update(id int64, user BotUser) error {
 	for _, uPlan := range user.GetActivePlans() {
 		exist := false
 		for _, plan := range plans {
-			if plan.IsActive() && plan.GetId() == uPlan.GetId() {
+			if plan.GetId() == uPlan.GetId() {
 				exist = true
 				if err := d.updatePlan(uPlan); err != nil {
 					return err
@@ -192,8 +193,8 @@ func (d Data) Update(id int64, user BotUser) error {
 
 func (d Data) insertPlan(userId int64, plan UserPlan) error {
 	insertPlan := d.Stmts["insertPlan"].stmt
-	if _, err := insertPlan.Exec(userId, plan.IsActive(),
-		plan.GetStartDate(), plan.GetAmount()); err != nil {
+	if _, err := insertPlan.Exec(userId, plan.GetStartDate(),
+		plan.GetLastPaymentDate(), plan.GetEndDate(), plan.GetAmount()); err != nil {
 		return err
 	}
 	return nil
@@ -221,7 +222,7 @@ func (d Data) getPlans(userId int64) ([]UserPlan, error) {
 	for rows.Next() {
 		p := Plan{}
 
-		if err := rows.Scan(&userId, &p.Active, &p.Start, &p.Invested, &p.Id); err != nil {
+		if err := rows.Scan(&userId, &p.Id, &p.Start, &p.LastPayment, &p.End, &p.Invested, &p.Id); err != nil {
 			return nil, err
 		}
 		plans = append(plans, &p)
@@ -258,10 +259,9 @@ func (d *Data) updateDatePlans() error {
 }
 
 func (d Data) updatePlan(plan UserPlan) error {
-	// 	updtPlanStmt := d.Stmts["updatePlan"].stmt
-	// updtPlanStmt.Exec()
-	// TODO
-	return nil
+	updtPlanStmt := d.Stmts["updatePlan"].stmt
+	_, err := updtPlanStmt.Exec(plan.GetLastPaymentDate())
+	return err
 }
 
 func (d Data) updateTx(uTx UserTransaction) error {

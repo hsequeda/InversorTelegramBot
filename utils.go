@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func getParentIdFromMessage(msg string) int64 {
@@ -14,4 +15,9 @@ func getParentIdFromMessage(msg string) int64 {
 		parentId, _ = strconv.ParseInt(splitMsg[1], 10, 0)
 	}
 	return parentId
+}
+
+func getDate() time.Time {
+	now := time.Now()
+	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, nil)
 }

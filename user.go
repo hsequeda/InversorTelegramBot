@@ -5,10 +5,18 @@ type User struct {
 	Name           string
 	DepositAddress string
 	ReceiveAddress string
-	Balance        string
+	Balance        int64
 	ParentId       int64
 	Txs            []UserTransaction
 	Plans          []UserPlan
+}
+
+func (u *User) SetPlans(plans []UserPlan) {
+	u.Plans = plans
+}
+
+func (u *User) GetPlans() []UserPlan {
+	return u.Plans
 }
 
 func (u *User) GetID() int64 {
@@ -43,8 +51,12 @@ func (u *User) SetReceiveAddress(addr string) {
 	u.ReceiveAddress = addr
 }
 
-func (u *User) GetBalance() string {
-	panic("implement me")
+func (u *User) GetBalance() int64 {
+	return u.Balance
+}
+
+func (u *User) SetBalance(newBalance int64) {
+	u.Balance = newBalance
 }
 
 func (u *User) GetParentId() int64 {
@@ -82,7 +94,7 @@ func (u *User) AddTransaction(transaction UserTransaction) {
 func (u *User) GetActivePlans() []UserPlan {
 	var plans []UserPlan
 	for e := range u.Plans {
-		if u.Plans[e].IsActive() {
+		if u.Plans[e].GetEndDate().Before(u.Plans[e].GetLastPaymentDate()) {
 			plans = append(plans, u.Plans[e])
 		}
 	}

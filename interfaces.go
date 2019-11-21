@@ -19,14 +19,16 @@ type BotUser interface {
 	SetDepositAddress(addr string)
 	GetReceiveAddress() string
 	SetReceiveAddress(addr string)
-	GetBalance() string
+	GetBalance() int64
+	SetBalance(int64)
 	GetParentId() int64
 	SetParentId(parentId int64)
 	GetReceiveTransaction() []UserTransaction
 	GetDepositTransaction() []UserTransaction
 	AddTransaction(transaction UserTransaction)
 	GetActivePlans() []UserPlan
-	AddPlan(plan UserPlan)
+	GetPlans() []UserPlan
+	SetPlans(plan []UserPlan)
 }
 
 type UserTransaction interface {
@@ -38,10 +40,10 @@ type UserTransaction interface {
 
 type UserPlan interface {
 	GetId() int64
-	IsActive() bool
 	GetStartDate() time.Time
+	GetLastPaymentDate() time.Time
+	SetLastPaymentDate(date time.Time)
+	GetEndDate() time.Time
 	GetPlanType() PlanType
-	SetPlanType(planType PlanType)
 	GetAmount() int64
-	SetAmount(investment int64)
 }
