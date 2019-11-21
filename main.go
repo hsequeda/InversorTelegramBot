@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
-	_ "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"regexp"
 )
+
+const Exponent = 8
 
 var (
 	bot       *tgbotapi.BotAPI
@@ -141,11 +143,12 @@ func main() {
 			if err != nil {
 				logrus.Fatal(err)
 			}
+			balance := decimal.New(user.GetBalance(), -Exponent)
 			text := fmt.Sprintf(
 				"Saldo de la cuenta:\n"+
 					"Saldo Extraible:\n"+
-					"%8f",
-				float32(user.GetBalance()/100000000))
+					"%s",
+				balance.StringFixed(Exponent))
 			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
 			if err != nil {
 				logrus.Error(err)
