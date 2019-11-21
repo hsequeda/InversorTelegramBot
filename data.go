@@ -5,7 +5,6 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
-	"time"
 )
 
 const (
@@ -253,18 +252,10 @@ func (d Data) getTxs(userId int64) ([]UserTransaction, error) {
 	return txs, nil
 }
 
-func (d *Data) updateDatePlans() error {
-	updateDatePlans := data.Stmts["updatePlan"].stmt
-	if _, err := updateDatePlans.Exec(time.Now()); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (d Data) updatePlan(plan UserPlan) error {
 	logrus.Info("Update plan")
 	updtPlanStmt := d.Stmts["updatePlan"].stmt
-	_, err := updtPlanStmt.Exec(plan.GetLastPaymentDate())
+	_, err := updtPlanStmt.Exec(plan.GetLastPaymentDate(), plan.GetId())
 	return err
 }
 
