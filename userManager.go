@@ -25,6 +25,7 @@ func GetUserByDepositAddress(address string) (BotUser, error) {
 
 // AddInvestToUser add a invest plan to user by userID.
 func AddInvestToUser(value string, userID int64) error {
+	logrus.Info("Add Invest")
 	user, err := data.Get(userID)
 	if err != nil {
 		return err
