@@ -168,7 +168,7 @@ func GetUser(id int64) (BotUser, error) {
 func GetActiveInversions(id int64) (string, error) {
 	user, err := data.Get(id)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	plans := user.GetActivePlans()
 	var inversions int64
