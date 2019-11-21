@@ -33,6 +33,10 @@ func AddInvestToUser(value string, userID int64) error {
 	if err != nil {
 		return err
 	}
+	if v < 100000 {
+		return fmt.Errorf("inversion amount is less than 0.0001 BTC")
+	}
+
 	p := createPlan(v)
 	if p != nil {
 		user.AddPlan(p)

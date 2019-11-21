@@ -79,13 +79,17 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 		u, err := GetUserByDepositAddress(address)
 		if err != nil {
 			logrus.Error(err)
+			return
 		}
+
 		if err := AddInvestToUser(value, u.GetID()); err != nil {
 			logrus.Error(err)
+			return
 		}
 
 		if err := AddTransactionToUser(u.GetID(), true, txid, value); err != nil {
 			logrus.Error(err)
+			return
 		}
 		// TODO
 		// Dividir entre 1000000 para obtener la cantidad en BTC.
