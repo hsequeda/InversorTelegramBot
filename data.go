@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -134,6 +135,7 @@ func (d Data) Delete(id int64) error {
 }
 
 func (d Data) Update(id int64, user BotUser) error {
+	logrus.Info("Update")
 	updUser := d.Stmts["updateUser"].stmt
 	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(), user.GetID())
 	if err != nil {
