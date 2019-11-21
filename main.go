@@ -145,7 +145,7 @@ func main() {
 				"Saldo de la cuenta:\n"+
 					"Saldo Extraible:\n"+
 					"%f",
-				float32(user.GetBalance()/100000000))
+				float64(user.GetBalance()/100000000))
 			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
 			if err != nil {
 				logrus.Error(err)
