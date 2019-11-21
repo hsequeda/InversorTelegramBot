@@ -193,6 +193,7 @@ func (d Data) Update(id int64, user BotUser) error {
 
 func (d Data) insertPlan(userId int64, plan UserPlan) error {
 	insertPlan := d.Stmts["insertPlan"].stmt
+	fmt.Printf("%#v", plan)
 	if _, err := insertPlan.Exec(userId, plan.GetStartDate(),
 		plan.GetLastPaymentDate(), plan.GetEndDate(), plan.GetAmount()); err != nil {
 		return err
