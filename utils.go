@@ -19,5 +19,5 @@ func getParentIdFromMessage(msg string) int64 {
 
 func getDate() time.Time {
 	now := time.Now()
-	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, nil)
+	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 }
