@@ -176,5 +176,5 @@ func GetActiveInversions(id int64) (string, error) {
 		inversions += plans[e].GetAmount()
 	}
 
-	return decimal.New(inversions, Exponent).StringFixed(Exponent), nil
+	return decimal.New(inversions, -Exponent).StringFixed(Exponent), nil
 }
