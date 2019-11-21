@@ -46,7 +46,7 @@ func InitDb() error {
 		"deleteUser": {q: "delete from \"User\" where id=$1"},
 		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
-		"insertPlan": {q: "insert into \"user_plan\" (user_id, begin_date, invest, last_payment, end_date)" +
+		"insertPlan": {q: "insert into \"user_plan\" (user_id, begin_date, last_payment, end_date, invest)" +
 			" values ($1,$2,$3,$4,$5,$6);"},
 		"updatePlan": {q: "update \"user_plan\" set last_payment=$1 where plan_id=$2;"},
 		"listTx":     {q: "select * from user_tx"},
