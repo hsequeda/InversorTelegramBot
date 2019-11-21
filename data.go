@@ -45,10 +45,11 @@ func InitDb() error {
 		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
 		"insertPlan": {q: "insert into \"user_plan\" (user_id, is_active, begin_date, invest) values ($1,$2,$3,$4);"},
-		"updatePlan": {q: "update \"user_plan\" set is_active=false where (begin_date::date + '90 day'::interval)>?;"},
-		"listTx":     {q: "select * from user_tx"},
-		"getTx":      {q: "select * from \"user_tx\" where user_id=$1;"},
-		"insertTx":   {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id) values ($1,$2,$3,$4);"},
+		// "updatePlan": {q: "update \"user_plan\" set is_active=false where (begin_date::date + '90 day'::interval)>?;"},
+		// "updatePlan": {q: "update \"user_plan\" set is_active=false where plan_id=$1;"},
+		"listTx":   {q: "select * from user_tx"},
+		"getTx":    {q: "select * from \"user_tx\" where user_id=$1;"},
+		"insertTx": {q: "insert into \"user_tx\" (user_id, is_deposit, amount, tx_id) values ($1,$2,$3,$4);"},
 		// "updateTx":   {q: "update user_tx set ;"},
 	}
 	for k, v := range data.Stmts {
@@ -138,6 +139,51 @@ func (d Data) Update(id int64, user BotUser) error {
 	if err != nil {
 		return err
 	}
+	plans, err := d.getPlans(id)
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	for _, uPlan := range user.GetActivePlans() {
+		exist := false
+		for _, plan := range plans {
+			if plan.IsActive() && plan.GetId() == uPlan.GetId() {
+				exist = true
+				if err := d.updatePlan(uPlan); err != nil {
+					return err
+				}
+			}
+			if !exist {
+				if err := d.insertPlan(user.GetID(), uPlan); err != nil {
+					return err
+				}
+				exist = false
+			}
+		}
+	}
+
+	txs, err := d.getTxs(id)
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+	userTxs := append(user.GetReceiveTransaction(), user.GetDepositTransaction()...)
+	for _, uTx := range userTxs {
+		exist := false
+		for _, tx := range txs {
+			if uTx.GetTxId() == tx.GetTxId() {
+				exist = true
+				if err := d.updateTx(uTx); err != nil {
+					return err
+				}
+			}
+			if !exist {
+				if err := d.insertTx(user.GetID(), uTx); err != nil {
+					return err
+				}
+				exist = false
+			}
+		}
+	}
 
 	return nil
 }
@@ -205,6 +251,18 @@ func (d *Data) updateDatePlans() error {
 	if _, err := updateDatePlans.Exec(time.Now()); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (d Data) updatePlan(plan UserPlan) error {
+	// 	updtPlanStmt := d.Stmts["updatePlan"].stmt
+	// updtPlanStmt.Exec()
+	// TODO
+	return nil
+}
+
+func (d Data) updateTx(uTx UserTransaction) error {
+
 	return nil
 }
 
