@@ -170,6 +170,7 @@ func main() {
 				logrus.Fatal(err)
 			}
 			ttProfFixed := decimal.New(totalProfit, -Exponent)
+			refersBonus := decimal.New(user.GetRefersBonus(), -Exponent)
 
 			text := fmt.Sprintf(
 				"Saldo de la cuenta:\n"+
@@ -178,10 +179,13 @@ func main() {
 					"Inversiones Activas:\n"+
 					"%s\n"+
 					"Ganancia Total:\n"+
+					"%s\n"+
+					"Bonus por Referidos:\n"+
 					"%s",
 				balance.StringFixed(Exponent),
 				actInversFixed.StringFixed(Exponent),
 				ttProfFixed.StringFixed(Exponent),
+				refersBonus.StringFixed(Exponent),
 			)
 			msg, err := button.InitButton(update.Message.Chat.ID, user.GetName(), text)
 			if err != nil {

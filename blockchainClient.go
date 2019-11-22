@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 // type Blockchain struct{}
@@ -91,15 +93,21 @@ func handleDeposit(w http.ResponseWriter, r *http.Request) {
 			logrus.Error(err)
 			return
 		}
-		// TODO
-		// Dividir entre 1000000 para obtener la cantidad en BTC.
+
+		intValue, err := strconv.ParseInt(value, 10, 0)
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		invert := decimal.New(intValue, -Exponent)
 		msg := tgbotapi.NewMessageToChannel(channelId,
 			fmt.Sprintf("Nueva inversion:\n "+
 				"%s ha invertido %s BTC!\n"+
 				"Transaction ID:\n"+
-				"<a href=\"https://blockchain.info/tx/%s\">%s</a>", u.GetName(), value, txid, txid))
-		msg.ParseMode = "html"
+				"<a href=\"https://blockchain.info/tx/%s\">%s</a>", u.GetName(),
+				invert.StringFixed(Exponent), txid, txid))
 
+		msg.ParseMode = "html"
 		if _, err := bot.Send(msg); err != nil {
 			logrus.Error(err)
 		}

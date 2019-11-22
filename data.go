@@ -39,9 +39,10 @@ func InitDb() error {
 	data.Stmts = map[string]*stmtConfig{
 		"listUser": {q: "select * from \"User\";"},
 		"getUser":  {q: "select * from \"User\" where id=$1;"},
-		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id, balance)" +
-			" values ($1,$2,$3,$4,$5,$6);"},
-		"updateUser": {q: "update \"User\" set name=$1, deposit_addrs=$2, receive_addrs=$3, balance=$4 where id=$5;"},
+		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id, balance,refers_bonus)" +
+			" values ($1,$2,$3,$4,$5,$6,$7);"},
+		"updateUser": {q: "update \"User\" set name=$1, deposit_addrs=$2, receive_addrs=$3, balance=$4, refers_bonus=$5" +
+			" where id=$$6;"},
 		"deleteUser": {q: "delete from \"User\" where id=$1"},
 		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
@@ -62,7 +63,7 @@ func InitDb() error {
 func (d Data) Insert(u BotUser) (int64, error) {
 	insertUser := data.Stmts["insertUser"].stmt
 	_, err := insertUser.Exec(u.GetID(), u.GetName(), u.GetDepositAddress(),
-		u.GetReceiveAddress(), u.GetParentId(), u.GetBalance())
+		u.GetReceiveAddress(), u.GetParentId(), u.GetBalance(), u.GetRefersBonus())
 	if err != nil {
 		return 0, err
 	}
@@ -85,7 +86,8 @@ func (d Data) Get(id int64) (BotUser, error) {
 	getUser := d.Stmts["getUser"].stmt
 	u := User{}
 	if err := getUser.QueryRow(id).
-		Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId, &u.Balance); err != nil {
+		Scan(&u.Id, &u.Name, &u.DepositAddress,
+			&u.ReceiveAddress, &u.ParentId, &u.Balance, &u.RefersBonus); err != nil {
 		return nil, err
 	}
 
@@ -119,7 +121,8 @@ func (d Data) List() ([]BotUser, error) {
 	var users = make([]BotUser, 0)
 	for rows.Next() {
 		var u = User{}
-		if err := rows.Scan(&u.Id, &u.Name, &u.DepositAddress, &u.ReceiveAddress, &u.ParentId, &u.Balance); err != nil {
+		if err := rows.Scan(&u.Id, &u.Name, &u.DepositAddress,
+			&u.ReceiveAddress, &u.ParentId, &u.Balance, &u.RefersBonus); err != nil {
 			return nil, err
 		}
 		users = append(users, &u)
@@ -137,7 +140,7 @@ func (d Data) Update(id int64, user BotUser) error {
 	logrus.Info("Update")
 	updUser := d.Stmts["updateUser"].stmt
 	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(),
-		user.GetBalance(), user.GetID())
+		user.GetBalance(), user.GetRefersBonus(), user.GetID())
 	if err != nil {
 		return err
 	}

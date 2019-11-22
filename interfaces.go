@@ -21,6 +21,8 @@ type BotUser interface {
 	SetReceiveAddress(addr string)
 	GetBalance() int64
 	SetBalance(int64)
+	GetRefersBonus() int64
+	SetRefersBonus(value int64)
 	GetParentId() int64
 	SetParentId(parentId int64)
 	GetReceiveTransaction() []UserTransaction

@@ -44,6 +44,42 @@ func AddInvestToUser(value string, userID int64) error {
 		if err := data.Update(user.GetID(), user); err != nil {
 			return err
 		}
+		if user.GetParentId() != 0 {
+			if err := SetBonusToParent(1, user.GetParentId(), p.GetAmount()); err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
+}
+
+func SetBonusToParent(lv int, id int64, amount int64) error {
+	user, err := data.Get(id)
+	if err != nil {
+		return err
+	}
+	switch lv {
+	case 1:
+		user.SetRefersBonus(int64(float64(user.GetRefersBonus()) + float64(amount)*0.03))
+		user.SetBalance(user.GetBalance() + user.GetRefersBonus())
+		break
+	case 2:
+		user.SetRefersBonus(int64(float64(user.GetRefersBonus()) + float64(amount)*0.02))
+		user.SetBalance(user.GetBalance() + user.GetRefersBonus())
+		break
+	case 3:
+		user.SetRefersBonus(int64(float64(user.GetRefersBonus()) + float64(amount)*0.01))
+		user.SetBalance(user.GetBalance() + user.GetRefersBonus())
+		break
+	}
+	if err := data.Update(user.GetID(), user); err != nil {
+		return err
+	}
+	if user.GetParentId() != 0 && lv != 3 {
+		if err := SetBonusToParent(lv+1, user.GetParentId(), amount); err != nil {
+			return err
+		}
 	}
 	return nil
 }

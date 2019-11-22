@@ -6,9 +6,18 @@ type User struct {
 	DepositAddress string
 	ReceiveAddress string
 	Balance        int64
+	RefersBonus    int64
 	ParentId       int64
 	Txs            []UserTransaction
 	Plans          []UserPlan
+}
+
+func (u *User) GetRefersBonus() int64 {
+	return u.RefersBonus
+}
+
+func (u *User) SetRefersBonus(value int64) {
+	u.RefersBonus = value
 }
 
 func (u *User) SetPlans(plans []UserPlan) {
