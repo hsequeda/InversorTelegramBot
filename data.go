@@ -140,7 +140,7 @@ func (d Data) Update(id int64, user BotUser) error {
 	logrus.Info("Update")
 	updUser := d.Stmts["updateUser"].stmt
 	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(),
-		user.GetBalance(), user.GetRefersBonus(), user.GetID())
+		user.GetBalance(), 0, user.GetID())
 	if err != nil {
 		return err
 	}
