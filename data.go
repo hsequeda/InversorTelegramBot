@@ -139,8 +139,12 @@ func (d Data) Delete(id int64) error {
 func (d Data) Update(id int64, user BotUser) error {
 	logrus.Info("Update")
 	updUser := d.Stmts["updateUser"].stmt
-	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(),
-		user.GetBalance(), 0, user.GetID())
+	logrus.Info(user.GetName())
+	logrus.Info(user.GetDepositAddress())
+	logrus.Info(user.GetReceiveAddress())
+	logrus.Info(user.GetBalance())
+	logrus.Info(user.GetRefersBonus())
+	_, err := updUser.Exec(user.GetName(), user.GetDepositAddress(), user.GetReceiveAddress(), user.GetBalance(), user.GetRefersBonus(), user.GetID())
 	if err != nil {
 		return err
 	}
