@@ -42,7 +42,7 @@ func InitDb() error {
 		"insertUser": {q: "Insert into \"User\" (id, name, deposit_addrs, receive_addrs, parent_id, balance,refers_bonus)" +
 			" values ($1,$2,$3,$4,$5,$6,$7);"},
 		"updateUser": {q: "update \"User\" set name=$1, deposit_addrs=$2, receive_addrs=$3, balance=$4, refers_bonus=$5" +
-			" where id=$$6;"},
+			" where id=$6;"},
 		"deleteUser": {q: "delete from \"User\" where id=$1"},
 		"listPlan":   {q: "select * from \"user_plan\""},
 		"getPlan":    {q: "select * from \"user_plan\" where user_id=$1;"},
